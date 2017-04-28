@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -84,11 +85,13 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	<T> List<T> elementChars(Map<Character, T> elements, Set<T> requiredElements) throws SegmentParseException {
+		final Map<Character, T> finalElements = new HashMap<>(elements);
+		requiredElements = new HashSet<>(requiredElements);
 		List<T> result = new ArrayList<>();
 		while (!elements.isEmpty()) {
 			T element;
 			if (requiredElements.isEmpty()) {
-				Optional<T> optional = maybe(() -> oneOf(elements));
+				Optional<T> optional = maybe(() -> oneOf(finalElements));
 				if (!optional.isPresent()) {
 					break;
 				}
@@ -98,8 +101,8 @@ public class WallsSurveyParser extends LineParser {
 			}
 			result.add(element);
 			char c = line.charAt(index - 1);
-			elements.remove(Character.toLowerCase(c));
-			elements.remove(Character.toUpperCase(c));
+			finalElements.remove(Character.toLowerCase(c));
+			finalElements.remove(Character.toUpperCase(c));
 			requiredElements.remove(element);
 		}
 		return result;
@@ -114,7 +117,7 @@ public class WallsSurveyParser extends LineParser {
 		lengthUnits.put("foot", Length.feet);
 		lengthUnits.put("ft", Length.feet);
 		lengthUnits.put("f", Length.feet);
-		return lengthUnits;
+		return Collections.unmodifiableMap(lengthUnits);
 	}
 
 	static Map<String, Unit<Angle>> createAzmUnits() {
@@ -130,21 +133,21 @@ public class WallsSurveyParser extends LineParser {
 		result.put("grads", Angle.gradians);
 		result.put("grad", Angle.gradians);
 		result.put("g", Angle.gradians);
-		return result;
+		return Collections.unmodifiableMap(result);
 	}
 
 	static Map<String, Unit<Angle>> createIncUnits() {
-		Map<String, Unit<Angle>> result = createAzmUnits();
+		Map<String, Unit<Angle>> result = new HashMap<>(createAzmUnits());
 		result.put("percent", Angle.percentGrade);
 		result.put("p", Angle.percentGrade);
-		return result;
+		return Collections.unmodifiableMap(result);
 	}
 
 	static <V> Map<Character, V> addUppercaseKeys(Map<Character, V> map) {
 		for (Map.Entry<Character, V> entry : new ArrayList<>(map.entrySet())) {
 			map.put(Character.toUpperCase(entry.getKey()), entry.getValue());
 		}
-		return map;
+		return Collections.unmodifiableMap(map);
 	}
 
 	static Map<Character, Unit<Length>> createLengthUnitSuffixes() {
@@ -164,7 +167,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	static Map<Character, Unit<Angle>> createIncUnitSuffixes() {
-		Map<Character, Unit<Angle>> result = createAzmUnitSuffixes();
+		Map<Character, Unit<Angle>> result = new HashMap<>(createAzmUnitSuffixes());
 		result.put('p', Angle.percentGrade);
 		return addUppercaseKeys(result);
 	}
@@ -224,7 +227,7 @@ public class WallsSurveyParser extends LineParser {
 				map.put(firstLetter, entry.getValue());
 			}
 		}
-		return map;
+		return Collections.unmodifiableMap(map);
 	}
 
 	static Map<String, Boolean> createCorrectedValues() {
@@ -250,7 +253,7 @@ public class WallsSurveyParser extends LineParser {
 		result.put("to", LrudType.TO);
 		result.put("t", LrudType.TO);
 		result.put("tb", LrudType.TO_BISECTOR);
-		return result;
+		return Collections.unmodifiableMap(result);
 	}
 
 	static Map<String, List<TapingMethodMeasurement>> createTapingMethods() {
@@ -260,7 +263,7 @@ public class WallsSurveyParser extends LineParser {
 		result.put("is", Arrays.asList(TapingMethodMeasurement.INSTRUMENT_HEIGHT, TapingMethodMeasurement.STATION));
 		result.put("st", Arrays.asList(TapingMethodMeasurement.STATION, TapingMethodMeasurement.TARGET_HEIGHT));
 		result.put("ss", Arrays.asList(TapingMethodMeasurement.STATION, TapingMethodMeasurement.STATION));
-		return result;
+		return Collections.unmodifiableMap(result);
 	}
 
 	static Map<String, Integer> createPrefixDirectives() {
@@ -269,7 +272,7 @@ public class WallsSurveyParser extends LineParser {
 		result.put("#prefix1", 0);
 		result.put("#prefix2", 1);
 		result.put("#prefix3", 2);
-		return result;
+		return Collections.unmodifiableMap(result);
 	}
 
 	Map<String, VoidProduction> createUnitsOptionMap() {
@@ -316,7 +319,7 @@ public class WallsSurveyParser extends LineParser {
 		result.put("uv", this::uv);
 		result.put("flag", this::flag);
 
-		return result;
+		return Collections.unmodifiableMap(result);
 	}
 
 	Map<String, VoidProduction> createDirectivesMap() {
@@ -333,13 +336,13 @@ public class WallsSurveyParser extends LineParser {
 		result.put("#seg", this::segmentLine);
 		result.put("#s", this::segmentLine);
 		result.put("#date", this::dateLine);
-		result.put("#.put(", this::beginBlockCommentLine);
+		result.put("#[", this::beginBlockCommentLine);
 		result.put("#]", this::endBlockCommentLine);
 		result.put("#prefix1", this::prefixLine);
 		result.put("#prefix2", this::prefixLine);
 		result.put("#prefix3", this::prefixLine);
 		result.put("#prefix", this::prefixLine);
-		return result;
+		return Collections.unmodifiableMap(result);
 	}
 
 	double approx(double val) {
@@ -581,7 +584,7 @@ public class WallsSurveyParser extends LineParser {
 				() -> floatedTraverseVarianceOverride(),
 				() -> lengthVarianceOverride(defaultUnit),
 				() -> rmsErrorVarianceOverride(defaultUnit),
-				() -> new VarianceOverride());
+				() -> null);
 	}
 
 	VarianceOverride floatedVectorVarianceOverride() throws SegmentParseException {
@@ -629,7 +632,7 @@ public class WallsSurveyParser extends LineParser {
 			}
 		}
 
-		return line.toString().substring(start, index - start);
+		return line.toString().substring(start, index);
 	}
 
 	void parseLine(String line) throws SegmentParseException {
@@ -1339,7 +1342,7 @@ public class WallsSurveyParser extends LineParser {
 		if (_units.getVectorType() == VectorType.COMPASS_AND_TAPE) {
 			if (!UnitizedDouble.isFinite(_vector.frontsightAzimuth) &&
 					!UnitizedDouble.isFinite(_vector.backsightAzimuth) &&
-					!_vector.isVertical()) {
+					!Vector.isVertical(_units.averageInclination(_vector.frontsightInclination, _vector.backsightInclination))) {
 				throw new SegmentParseException("azimuth can only be omitted for vertical shots", _azmSegment);
 			}
 
@@ -1366,7 +1369,7 @@ public class WallsSurveyParser extends LineParser {
 			_vector.north = measurement;
 			break;
 		case UP:
-			_vector.up = measurement;
+			_vector.elevation = measurement;
 			break;
 		}
 	}

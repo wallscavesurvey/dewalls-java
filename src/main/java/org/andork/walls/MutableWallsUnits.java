@@ -775,7 +775,7 @@ public final class MutableWallsUnits {
 			newPrefix.add(null);
 		}
 		newPrefix.set(index, prefix);
-		while (!newPrefix.isEmpty() && newPrefix.get(newPrefix.size() - 1) != null) {
+		while (!newPrefix.isEmpty() && newPrefix.get(newPrefix.size() - 1) == null) {
 			newPrefix.remove(newPrefix.size() - 1);
 		}
 		return setPrefix(newPrefix);
@@ -789,7 +789,8 @@ public final class MutableWallsUnits {
 		int explicitPrefixCount = name.length() - name.replace(":", "").length();
 		List<String> prefix = getPrefix();
 		for (int i = explicitPrefixCount; i < prefix.size(); i++) {
-			name = prefix.get(i) + ":" + name;
+			String p = prefix.get(i);
+			name = (p == null ? "" : p) + ":" + name;
 		}
 		return name.replaceFirst("^:+", "");
 	}

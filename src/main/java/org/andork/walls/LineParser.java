@@ -291,7 +291,7 @@ public class LineParser {
 
 	public Segment expect(String c) throws SegmentParseExpectedException {
 		if (index + c.length() <= line.length()) {
-			if (c.equals(line.substring(index, c.length()).toString())) {
+			if (c.equals(line.substring(index, index + c.length()).toString())) {
 				int start = index;
 				index += c.length();
 				return line.substring(start, index);
@@ -302,7 +302,7 @@ public class LineParser {
 
 	public Segment expectIgnoreCase(String c) throws SegmentParseExpectedException {
 		if (index + c.length() <= line.length()) {
-			if (c.equalsIgnoreCase(line.substring(index, c.length()).toString())) {
+			if (c.equalsIgnoreCase(line.substring(index, index + c.length()).toString())) {
 				int start = index;
 				index += c.length();
 				return line.substring(start, index);
