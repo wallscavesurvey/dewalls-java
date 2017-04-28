@@ -1076,7 +1076,7 @@ public class WallsSurveyParser extends LineParser {
 		if (maybeChar('=')) {
 			macroValue = quotedTextOrNonwhitespace();
 		}
-		_macros.put("macroName", macroValue);
+		_macros.put(macroName, macroValue);
 	}
 
 	void save() throws SegmentParseException

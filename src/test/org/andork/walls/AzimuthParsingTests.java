@@ -1,10 +1,10 @@
 package org.andork.walls;
 
+import static org.andork.walls.LineParserAssertions.assertThrows;
+
 import org.andork.segment.SegmentParseException;
 import org.andork.unit.Angle;
 import org.andork.unit.UnitizedDouble;
-import org.andork.walls.LineParser.Production;
-import org.andork.walls.LineParser.VoidProduction;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,24 +28,7 @@ public class AzimuthParsingTests {
 				new UnitizedDouble<Angle>(2.5, Angle.milsNATO), 
 				new WallsSurveyParser("2.5m").azimuth(Angle.degrees));
 	}
-	
-	static void assertThrows(Production<?> p) {
-		try {
-			p.run();
-			Assert.fail("expected production to throw");
-		} catch (Exception ex) {
-			// ignore
-		}
-	}
-	
-	static void assertThrows(VoidProduction p) {
-		try {
-			p.run();
-			Assert.fail("expected production to throw");
-		} catch (Exception ex) {
-			// ignore
-		}
-	}
+
 		
 	@Test
 	public void testPercentGradeForbidden() throws SegmentParseException {
