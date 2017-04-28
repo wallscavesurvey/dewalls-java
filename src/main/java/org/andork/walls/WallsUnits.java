@@ -1,5 +1,5 @@
 /**
- * Generated from {@code WallsUnits.record.js} by java-record-generator on 4/28/2017, 10:17:42 AM.
+ * Generated from {@code WallsUnits.record.js} by java-record-generator on 4/28/2017, 5:09:04 PM.
  * {@link https://github.com/jedwards1211/java-record-generator#readme}
  */
  
@@ -437,7 +437,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code ctOrder} is unchanged, or a copy with the new {@code ctOrder}.
 	 */
 	public WallsUnits setCtOrder(List<CtMeasurement> ctOrder) {
-		if (!Objects.equals(data.ctOrder, ctOrder)) return this;
+		if (Objects.equals(data.ctOrder, ctOrder)) return this;
 		return toMutable().setCtOrder(ctOrder).toImmutable();
 	}
 	
@@ -449,7 +449,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code rectOrder} is unchanged, or a copy with the new {@code rectOrder}.
 	 */
 	public WallsUnits setRectOrder(List<RectMeasurement> rectOrder) {
-		if (!Objects.equals(data.rectOrder, rectOrder)) return this;
+		if (Objects.equals(data.rectOrder, rectOrder)) return this;
 		return toMutable().setRectOrder(rectOrder).toImmutable();
 	}
 	
@@ -533,7 +533,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code decl} is unchanged, or a copy with the new {@code decl}.
 	 */
 	public WallsUnits setDecl(UnitizedDouble<Angle> decl) {
-		if (!Objects.equals(data.decl, decl)) return this;
+		if (Objects.equals(data.decl, decl)) return this;
 		return toMutable().setDecl(decl).toImmutable();
 	}
 	
@@ -545,7 +545,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code grid} is unchanged, or a copy with the new {@code grid}.
 	 */
 	public WallsUnits setGrid(UnitizedDouble<Angle> grid) {
-		if (!Objects.equals(data.grid, grid)) return this;
+		if (Objects.equals(data.grid, grid)) return this;
 		return toMutable().setGrid(grid).toImmutable();
 	}
 	
@@ -557,7 +557,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code rect} is unchanged, or a copy with the new {@code rect}.
 	 */
 	public WallsUnits setRect(UnitizedDouble<Angle> rect) {
-		if (!Objects.equals(data.rect, rect)) return this;
+		if (Objects.equals(data.rect, rect)) return this;
 		return toMutable().setRect(rect).toImmutable();
 	}
 	
@@ -569,7 +569,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code incd} is unchanged, or a copy with the new {@code incd}.
 	 */
 	public WallsUnits setIncd(UnitizedDouble<Length> incd) {
-		if (!Objects.equals(data.incd, incd)) return this;
+		if (Objects.equals(data.incd, incd)) return this;
 		return toMutable().setIncd(incd).toImmutable();
 	}
 	
@@ -581,7 +581,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code inca} is unchanged, or a copy with the new {@code inca}.
 	 */
 	public WallsUnits setInca(UnitizedDouble<Angle> inca) {
-		if (!Objects.equals(data.inca, inca)) return this;
+		if (Objects.equals(data.inca, inca)) return this;
 		return toMutable().setInca(inca).toImmutable();
 	}
 	
@@ -593,7 +593,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code incab} is unchanged, or a copy with the new {@code incab}.
 	 */
 	public WallsUnits setIncab(UnitizedDouble<Angle> incab) {
-		if (!Objects.equals(data.incab, incab)) return this;
+		if (Objects.equals(data.incab, incab)) return this;
 		return toMutable().setIncab(incab).toImmutable();
 	}
 	
@@ -605,7 +605,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code incv} is unchanged, or a copy with the new {@code incv}.
 	 */
 	public WallsUnits setIncv(UnitizedDouble<Angle> incv) {
-		if (!Objects.equals(data.incv, incv)) return this;
+		if (Objects.equals(data.incv, incv)) return this;
 		return toMutable().setIncv(incv).toImmutable();
 	}
 	
@@ -617,7 +617,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code incvb} is unchanged, or a copy with the new {@code incvb}.
 	 */
 	public WallsUnits setIncvb(UnitizedDouble<Angle> incvb) {
-		if (!Objects.equals(data.incvb, incvb)) return this;
+		if (Objects.equals(data.incvb, incvb)) return this;
 		return toMutable().setIncvb(incvb).toImmutable();
 	}
 	
@@ -629,7 +629,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code incs} is unchanged, or a copy with the new {@code incs}.
 	 */
 	public WallsUnits setIncs(UnitizedDouble<Length> incs) {
-		if (!Objects.equals(data.incs, incs)) return this;
+		if (Objects.equals(data.incs, incs)) return this;
 		return toMutable().setIncs(incs).toImmutable();
 	}
 	
@@ -641,7 +641,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code inch} is unchanged, or a copy with the new {@code inch}.
 	 */
 	public WallsUnits setInch(UnitizedDouble<Length> inch) {
-		if (!Objects.equals(data.inch, inch)) return this;
+		if (Objects.equals(data.inch, inch)) return this;
 		return toMutable().setInch(inch).toImmutable();
 	}
 	
@@ -665,7 +665,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code typeabTolerance} is unchanged, or a copy with the new {@code typeabTolerance}.
 	 */
 	public WallsUnits setTypeabTolerance(UnitizedDouble<Angle> typeabTolerance) {
-		if (!Objects.equals(data.typeabTolerance, typeabTolerance)) return this;
+		if (Objects.equals(data.typeabTolerance, typeabTolerance)) return this;
 		return toMutable().setTypeabTolerance(typeabTolerance).toImmutable();
 	}
 	
@@ -701,7 +701,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code typevbTolerance} is unchanged, or a copy with the new {@code typevbTolerance}.
 	 */
 	public WallsUnits setTypevbTolerance(UnitizedDouble<Angle> typevbTolerance) {
-		if (!Objects.equals(data.typevbTolerance, typevbTolerance)) return this;
+		if (Objects.equals(data.typevbTolerance, typevbTolerance)) return this;
 		return toMutable().setTypevbTolerance(typevbTolerance).toImmutable();
 	}
 	
@@ -749,7 +749,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code lrudOrder} is unchanged, or a copy with the new {@code lrudOrder}.
 	 */
 	public WallsUnits setLrudOrder(List<LrudMeasurement> lrudOrder) {
-		if (!Objects.equals(data.lrudOrder, lrudOrder)) return this;
+		if (Objects.equals(data.lrudOrder, lrudOrder)) return this;
 		return toMutable().setLrudOrder(lrudOrder).toImmutable();
 	}
 	
@@ -761,7 +761,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code tape} is unchanged, or a copy with the new {@code tape}.
 	 */
 	public WallsUnits setTape(List<TapingMethodMeasurement> tape) {
-		if (!Objects.equals(data.tape, tape)) return this;
+		if (Objects.equals(data.tape, tape)) return this;
 		return toMutable().setTape(tape).toImmutable();
 	}
 	
@@ -773,7 +773,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code flag} is unchanged, or a copy with the new {@code flag}.
 	 */
 	public WallsUnits setFlag(String flag) {
-		if (!Objects.equals(data.flag, flag)) return this;
+		if (Objects.equals(data.flag, flag)) return this;
 		return toMutable().setFlag(flag).toImmutable();
 	}
 	
@@ -785,7 +785,7 @@ public final class WallsUnits {
 	 * @return this {@code WallsUnits} if {@code prefix} is unchanged, or a copy with the new {@code prefix}.
 	 */
 	public WallsUnits setPrefix(List<String> prefix) {
-		if (!Objects.equals(data.prefix, prefix)) return this;
+		if (Objects.equals(data.prefix, prefix)) return this;
 		return toMutable().setPrefix(prefix).toImmutable();
 	}
 	

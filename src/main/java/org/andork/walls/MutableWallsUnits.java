@@ -1,5 +1,5 @@
 /**
- * Generated from {@code WallsUnits.record.js} by java-record-generator on 4/28/2017, 10:17:43 AM.
+ * Generated from {@code WallsUnits.record.js} by java-record-generator on 4/28/2017, 5:09:04 PM.
  * {@link https://github.com/jedwards1211/java-record-generator#readme}
  */
  
@@ -300,7 +300,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setCtOrder(List<CtMeasurement> ctOrder) {
-		if (!Objects.equals(data.ctOrder, ctOrder)) return this;
+		if (Objects.equals(data.ctOrder, ctOrder)) return this;
 		detach();
 		data.ctOrder = ctOrder;
 		return this;
@@ -314,7 +314,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setRectOrder(List<RectMeasurement> rectOrder) {
-		if (!Objects.equals(data.rectOrder, rectOrder)) return this;
+		if (Objects.equals(data.rectOrder, rectOrder)) return this;
 		detach();
 		data.rectOrder = rectOrder;
 		return this;
@@ -412,7 +412,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setDecl(UnitizedDouble<Angle> decl) {
-		if (!Objects.equals(data.decl, decl)) return this;
+		if (Objects.equals(data.decl, decl)) return this;
 		detach();
 		data.decl = decl;
 		return this;
@@ -426,7 +426,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setGrid(UnitizedDouble<Angle> grid) {
-		if (!Objects.equals(data.grid, grid)) return this;
+		if (Objects.equals(data.grid, grid)) return this;
 		detach();
 		data.grid = grid;
 		return this;
@@ -440,7 +440,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setRect(UnitizedDouble<Angle> rect) {
-		if (!Objects.equals(data.rect, rect)) return this;
+		if (Objects.equals(data.rect, rect)) return this;
 		detach();
 		data.rect = rect;
 		return this;
@@ -454,7 +454,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setIncd(UnitizedDouble<Length> incd) {
-		if (!Objects.equals(data.incd, incd)) return this;
+		if (Objects.equals(data.incd, incd)) return this;
 		detach();
 		data.incd = incd;
 		return this;
@@ -468,7 +468,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setInca(UnitizedDouble<Angle> inca) {
-		if (!Objects.equals(data.inca, inca)) return this;
+		if (Objects.equals(data.inca, inca)) return this;
 		detach();
 		data.inca = inca;
 		return this;
@@ -482,7 +482,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setIncab(UnitizedDouble<Angle> incab) {
-		if (!Objects.equals(data.incab, incab)) return this;
+		if (Objects.equals(data.incab, incab)) return this;
 		detach();
 		data.incab = incab;
 		return this;
@@ -496,7 +496,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setIncv(UnitizedDouble<Angle> incv) {
-		if (!Objects.equals(data.incv, incv)) return this;
+		if (Objects.equals(data.incv, incv)) return this;
 		detach();
 		data.incv = incv;
 		return this;
@@ -510,7 +510,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setIncvb(UnitizedDouble<Angle> incvb) {
-		if (!Objects.equals(data.incvb, incvb)) return this;
+		if (Objects.equals(data.incvb, incvb)) return this;
 		detach();
 		data.incvb = incvb;
 		return this;
@@ -524,7 +524,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setIncs(UnitizedDouble<Length> incs) {
-		if (!Objects.equals(data.incs, incs)) return this;
+		if (Objects.equals(data.incs, incs)) return this;
 		detach();
 		data.incs = incs;
 		return this;
@@ -538,7 +538,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setInch(UnitizedDouble<Length> inch) {
-		if (!Objects.equals(data.inch, inch)) return this;
+		if (Objects.equals(data.inch, inch)) return this;
 		detach();
 		data.inch = inch;
 		return this;
@@ -566,7 +566,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setTypeabTolerance(UnitizedDouble<Angle> typeabTolerance) {
-		if (!Objects.equals(data.typeabTolerance, typeabTolerance)) return this;
+		if (Objects.equals(data.typeabTolerance, typeabTolerance)) return this;
 		detach();
 		data.typeabTolerance = typeabTolerance;
 		return this;
@@ -608,7 +608,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setTypevbTolerance(UnitizedDouble<Angle> typevbTolerance) {
-		if (!Objects.equals(data.typevbTolerance, typevbTolerance)) return this;
+		if (Objects.equals(data.typevbTolerance, typevbTolerance)) return this;
 		detach();
 		data.typevbTolerance = typevbTolerance;
 		return this;
@@ -664,7 +664,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setLrudOrder(List<LrudMeasurement> lrudOrder) {
-		if (!Objects.equals(data.lrudOrder, lrudOrder)) return this;
+		if (Objects.equals(data.lrudOrder, lrudOrder)) return this;
 		detach();
 		data.lrudOrder = lrudOrder;
 		return this;
@@ -678,7 +678,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setTape(List<TapingMethodMeasurement> tape) {
-		if (!Objects.equals(data.tape, tape)) return this;
+		if (Objects.equals(data.tape, tape)) return this;
 		detach();
 		data.tape = tape;
 		return this;
@@ -692,7 +692,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setFlag(String flag) {
-		if (!Objects.equals(data.flag, flag)) return this;
+		if (Objects.equals(data.flag, flag)) return this;
 		detach();
 		data.flag = flag;
 		return this;
@@ -706,7 +706,7 @@ public final class MutableWallsUnits {
 	 * @return this {@code MutableWallsUnits}.
 	 */
 	public MutableWallsUnits setPrefix(List<String> prefix) {
-		if (!Objects.equals(data.prefix, prefix)) return this;
+		if (Objects.equals(data.prefix, prefix)) return this;
 		detach();
 		data.prefix = prefix;
 		return this;
