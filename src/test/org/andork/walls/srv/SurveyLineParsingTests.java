@@ -1,6 +1,6 @@
-package org.andork.walls;
+package org.andork.walls.srv;
 
-import static org.andork.walls.LineParserAssertions.assertThrows;
+import static org.andork.walls.srv.LineParserAssertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,14 @@ import org.andork.segment.SegmentParseException;
 import org.andork.unit.Angle;
 import org.andork.unit.Length;
 import org.andork.unit.UnitizedDouble;
+import org.andork.walls.WallsMessage;
+import org.andork.walls.srv.AbstractWallsVisitor;
+import org.andork.walls.srv.CtMeasurement;
+import org.andork.walls.srv.FixedStation;
+import org.andork.walls.srv.MutableWallsUnits;
+import org.andork.walls.srv.VarianceOverride;
+import org.andork.walls.srv.Vector;
+import org.andork.walls.srv.WallsSurveyParser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

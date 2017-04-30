@@ -1,10 +1,11 @@
-package org.andork.walls;
+package org.andork.walls.srv;
 
-import static org.andork.walls.LineParserAssertions.assertThrows;
+import static org.andork.walls.srv.LineParserAssertions.assertThrows;
 
 import org.andork.segment.SegmentParseException;
 import org.andork.unit.Angle;
 import org.andork.unit.UnitizedDouble;
+import org.andork.walls.srv.WallsSurveyParser;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -1,7 +1,9 @@
-package org.andork.walls;
+package org.andork.walls.srv;
 
 import java.util.Date;
 import java.util.List;
+
+import org.andork.walls.WallsMessage;
 
 public class AbstractWallsVisitor implements WallsVisitor {
 	@Override

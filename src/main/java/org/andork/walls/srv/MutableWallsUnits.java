@@ -3,7 +3,7 @@
  * {@link https://github.com/jedwards1211/java-record-generator#readme}
  */
  
-package org.andork.walls;
+package org.andork.walls.srv;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import org.andork.unit.Unit;
 import org.andork.unit.Angle;
 import org.andork.unit.Length;
 import org.andork.unit.UnitizedDouble;
-import org.andork.walls.WallsUnits.Data;
+import org.andork.walls.srv.WallsUnits.Data;
 
 /**
  * The mutable version of {@link WallsUnits}.

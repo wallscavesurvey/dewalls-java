@@ -1,4 +1,4 @@
-package org.andork.walls;
+package org.andork.walls.srv;
 
 /**
  * The type of a rectangular measurement.

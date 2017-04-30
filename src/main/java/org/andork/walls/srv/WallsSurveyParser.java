@@ -1,4 +1,4 @@
-package org.andork.walls;
+package org.andork.walls.srv;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -26,6 +26,10 @@ import org.andork.unit.Length;
 import org.andork.unit.Unit;
 import org.andork.unit.UnitType;
 import org.andork.unit.UnitizedDouble;
+import org.andork.walls.LineParser;
+import org.andork.walls.Optional;
+import org.andork.walls.SegmentParseExpectedException;
+import org.andork.walls.WallsMessage;
 
 public class WallsSurveyParser extends LineParser {
 	WallsVisitor visitor = new AbstractWallsVisitor();

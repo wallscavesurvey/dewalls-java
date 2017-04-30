@@ -26,6 +26,42 @@ public class WallsMessage {
 		this.endColumn = endColumn;
 		this.context = context;
 	}
+	
+	public WallsMessage(String severity, String message) {
+		super();
+		this.severity = severity;
+		this.message = message;
+		this.source = null;
+		this.startLine = -1;
+		this.startColumn = -1;
+		this.endLine = -1;
+		this.endColumn = -1;
+		this.context = null;
+	}
+	
+	public WallsMessage(String severity, String message, String source) {
+		super();
+		this.severity = severity;
+		this.message = message;
+		this.source = source;
+		this.startLine = -1;
+		this.startColumn = -1;
+		this.endLine = -1;
+		this.endColumn = -1;
+		this.context = null;
+	}
+	
+	public WallsMessage(String severity, String message, Object source, int startLine) {
+		super();
+		this.severity = severity;
+		this.message = message;
+		this.source = source;
+		this.startLine = startLine;
+		this.startColumn = -1;
+		this.endLine = -1;
+		this.endColumn = -1;
+		this.context = null;
+	}
 
 	public WallsMessage(String severity, String message, Object source, int startLine, int startColumn, int endLine,
 			int endColumn) {

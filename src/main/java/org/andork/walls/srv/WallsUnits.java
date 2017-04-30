@@ -3,7 +3,7 @@
  * {@link https://github.com/jedwards1211/java-record-generator#readme}
  */
  
-package org.andork.walls;
+package org.andork.walls.srv;
 
 import java.util.List;
 import java.util.ArrayList;
