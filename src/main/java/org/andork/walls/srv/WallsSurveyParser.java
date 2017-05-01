@@ -374,7 +374,7 @@ public class WallsSurveyParser extends LineParser {
 	static final Map<String, Boolean> correctedValues = createCorrectedValues();
 	static final Map<String, CaseType> caseTypes = createCaseTypes();
 	static final Map<String, LrudType> lrudTypes = createLrudTypes();
-	static final Map<String, List<TapingMethodMeasurement>> tapingMethods = createTapingMethods();
+	public static final Map<String, List<TapingMethodMeasurement>> tapingMethods = createTapingMethods();
 	static final Map<String, Integer> prefixDirectives = createPrefixDirectives();
 
 	static final Set<Character> escapedChars = new HashSet<>(Arrays.asList(

@@ -40,7 +40,7 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 	public WallsUnits units;
 
 	public static boolean isVertical(UnitizedDouble<Angle> angle) {
-		return Math.abs(angle.abs().doubleValue(Angle.degrees) - 90.0) < 1e-6;
+		return angle != null && Math.abs(angle.abs().doubleValue(Angle.degrees) - 90.0) < 1e-6;
 	}
 
 	public boolean isVertical() {
@@ -66,7 +66,7 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 		distance = distance.in(units.getDUnit()).sub(units.getIncd());
 		UnitizedDouble<Angle> azm = Angle.atan2(east, north).in(units.getAUnit()).sub(units.getInca());
 		if (azm.doubleValue(azm.unit) < 0) {
-			azm = azm.add(new UnitizedDouble<>(360.0, Angle.degrees));
+			azm = azm.add(Angle.degrees(360.0));
 		}
 		frontsightAzimuth = azm;
 		frontsightInclination = Angle.atan2(up, ne).in(units.getVUnit()).sub(units.getIncv());
@@ -78,8 +78,9 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 						instrumentHeight.isNonzero() ||
 						targetHeight.isNonzero())) {
 			// get corrected average inclination (default to zero)
-			UnitizedDouble<Angle> inc = units.averageInclination(frontsightInclination.add(units.getIncv()),
-					backsightInclination.add(units.getIncvb()));
+			UnitizedDouble<Angle> inc = units.averageInclination(
+					frontsightInclination != null ? frontsightInclination.add(units.getIncv()) : null,
+					backsightInclination != null ? backsightInclination.add(units.getIncvb()) : null);
 
 			// get corrected distance
 			UnitizedDouble<Length> tapeDist = distance.add(units.getIncd());
@@ -115,8 +116,8 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 
 				if (heightOffset.abs().sub(tapeDist).abs().compareTo(tapeDist.mul(1e-8)) < 0) {
 					// vertical shot
-					stationToStationInc = heightOffset.isPositive() ? new UnitizedDouble<>(90.0, Angle.degrees)
-							: new UnitizedDouble<>(-90.0, Angle.degrees);
+					stationToStationInc = heightOffset.isPositive() ? Angle.degrees(90.0)
+							: Angle.degrees(-90.0);
 					stationToStationDist = heightOffset.add(units.getInch()).abs();
 				} else {
 					if (units.getInch().isNonzero()) {
@@ -137,7 +138,7 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 			}
 			if (!isFinite(stationToStationInc)) {
 				if (!isFinite(inc)) {
-					inc = new UnitizedDouble<>(0, Angle.degrees);
+					inc = Angle.degrees(0);
 				}
 
 				// compute height of tape ends above stations
@@ -192,8 +193,8 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 				UnitizedDouble<Angle> dInc = stationToStationInc.sub(inc);
 				// since we are moving the original vectors by the difference, we don't need to subtract the
 				// correction factors -- they're already present
-				frontsightInclination = frontsightInclination.add(dInc);
-				backsightInclination = backsightInclination.add(dInc);
+				if (frontsightInclination != null) frontsightInclination = frontsightInclination.add(dInc);
+				if (backsightInclination != null) backsightInclination = backsightInclination.add(dInc);
 			}
 
 			// clear out the instrument and target heights, since the vector is now fully determined by the

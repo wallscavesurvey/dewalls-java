@@ -25,10 +25,10 @@
   </dependencies>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
-    <testSourceDirectory>src/main/test</testSourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
     <testResources>
       <testResource>
-        <directory>src/main/test</directory>
+        <directory>src/test/resources</directory>
         <excludes>
           <exclude>**/*.java</exclude>
         </excludes>

@@ -31,11 +31,11 @@ public class WallsProjectParserTests {
 		Assert.assertTrue(projectRoot.gridRelative());
 
 		Assert.assertNotNull(projectRoot.reference());
-		Assert.assertEquals(new UnitizedDouble<>(2308521.655, Length.meters), projectRoot.reference().northing);
-		Assert.assertEquals(new UnitizedDouble<>(324341.706, Length.meters), projectRoot.reference().easting);
+		Assert.assertEquals(Length.meters(2308521.655), projectRoot.reference().northing);
+		Assert.assertEquals(Length.meters(324341.706), projectRoot.reference().easting);
 		Assert.assertEquals(16, projectRoot.reference().zone);
-		Assert.assertEquals(new UnitizedDouble<>(-0.602, Angle.degrees), projectRoot.reference().gridConvergence);
-		Assert.assertEquals(new UnitizedDouble<>(27, Length.meters), projectRoot.reference().elevation);
+		Assert.assertEquals(Angle.degrees(-0.602), projectRoot.reference().gridConvergence);
+		Assert.assertEquals(Length.meters(27), projectRoot.reference().elevation);
 
 		Assert.assertEquals(5, projectRoot.children.size());
 

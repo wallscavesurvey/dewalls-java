@@ -1,6 +1,6 @@
 package org.andork.walls.srv;
 
-import static org.andork.walls.srv.LineParserAssertions.assertThrows;
+import static org.andork.walls.LineParserAssertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,10 +65,10 @@ public class SurveyLineParsingTests {
 
 		Assert.assertEquals("A1", vector.from);
 		Assert.assertEquals("A2", vector.to);
-		Assert.assertEquals(new UnitizedDouble<>(2.5, Length.meters), vector.distance);
-		Assert.assertEquals(new UnitizedDouble<>(350, Angle.degrees), vector.frontsightAzimuth);
+		Assert.assertEquals(Length.meters(2.5), vector.distance);
+		Assert.assertEquals(Angle.degrees(350), vector.frontsightAzimuth);
 		Assert.assertNull(vector.backsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(2.3, Angle.degrees), vector.frontsightInclination);
+		Assert.assertEquals(Angle.degrees(2.3), vector.frontsightInclination);
 		Assert.assertNull(vector.backsightInclination);
 	}
 
@@ -110,21 +110,21 @@ public class SurveyLineParsingTests {
 
 		Assert.assertEquals("A1", vector.from);
 		Assert.assertEquals("A2", vector.to);
-		Assert.assertEquals(new UnitizedDouble<>(2.5, Length.meters), vector.distance);
-		Assert.assertEquals(new UnitizedDouble<>(350, Angle.degrees), vector.frontsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(349, Angle.degrees), vector.backsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(2.3, Angle.degrees), vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(2.4, Angle.degrees), vector.backsightInclination);
+		Assert.assertEquals(Length.meters(2.5), vector.distance);
+		Assert.assertEquals(Angle.degrees(350), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(349), vector.backsightAzimuth);
+		Assert.assertEquals(Angle.degrees(2.3), vector.frontsightInclination);
+		Assert.assertEquals(Angle.degrees(2.4), vector.backsightInclination);
 	}
 
 	@Test
 	public void testOmittedFrontsightsAndBacksights() throws SegmentParseException {
 		parser.parseLine("A1 A2 2.5 350/-- --/2.4");
 
-		Assert.assertEquals(new UnitizedDouble<>(350, Angle.degrees), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(350), vector.frontsightAzimuth);
 		Assert.assertNull(vector.backsightAzimuth);
 		Assert.assertNull(vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(2.4, Angle.degrees), vector.backsightInclination);
+		Assert.assertEquals(Angle.degrees(2.4), vector.backsightInclination);
 	}
 
 	@Test
@@ -141,14 +141,14 @@ public class SurveyLineParsingTests {
 	public void testDUnitAffectsDistance() throws SegmentParseException {
 		parser.parseLine("#units d=feet");
 		parser.parseLine("A B 2.5 350 4");
-		Assert.assertEquals(new UnitizedDouble<>(2.5, Length.feet), vector.distance);
+		Assert.assertEquals(Length.feet(2.5), vector.distance);
 	}
 
 	@Test
 	public void testSUnitAffectsDistance() throws SegmentParseException {
 		parser.parseLine("#units s=feet");
 		parser.parseLine("A B 2.5 350 4");
-		Assert.assertEquals(new UnitizedDouble<>(2.5, Length.meters), vector.distance);
+		Assert.assertEquals(Length.meters(2.5), vector.distance);
 	}
 
 	@Test
@@ -190,24 +190,24 @@ public class SurveyLineParsingTests {
 	public void testAUnit() throws SegmentParseException {
 		parser.parseLine("#units a=grads");
 		parser.parseLine("A B 1 2/3 4");
-		Assert.assertEquals(new UnitizedDouble<>(2, Angle.gradians), vector.frontsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.degrees), vector.backsightAzimuth);
+		Assert.assertEquals(Angle.gradians(2), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(3), vector.backsightAzimuth);
 	}
 
 	@Test
 	public void testAbUnit() throws SegmentParseException {
 		parser.parseLine("#units ab=grads");
 		parser.parseLine("A B 1 2/3 4");
-		Assert.assertEquals(new UnitizedDouble<>(2, Angle.degrees), vector.frontsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.gradians), vector.backsightAzimuth);
+		Assert.assertEquals(Angle.degrees(2), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.gradians(3), vector.backsightAzimuth);
 	}
 
 	@Test
 	public void testA_AbUnit() throws SegmentParseException {
 		parser.parseLine("#units a/ab=grads");
 		parser.parseLine("A B 1 2/3 4");
-		Assert.assertEquals(new UnitizedDouble<>(2, Angle.gradians), vector.frontsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.gradians), vector.backsightAzimuth);
+		Assert.assertEquals(Angle.gradians(2), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.gradians(3), vector.backsightAzimuth);
 	}
 
 	@Test
@@ -253,8 +253,8 @@ public class SurveyLineParsingTests {
 	public void testVUnit() throws SegmentParseException {
 		parser.parseLine("#units v=grads");
 		parser.parseLine("A B 1 2 3/4");
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.gradians), vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(4, Angle.degrees), vector.backsightInclination);
+		Assert.assertEquals(Angle.gradians(3), vector.frontsightInclination);
+		Assert.assertEquals(Angle.degrees(4), vector.backsightInclination);
 	}
 
 	@Test
@@ -266,16 +266,16 @@ public class SurveyLineParsingTests {
 	public void testVbUnit() throws SegmentParseException {
 		parser.parseLine("#units vb=grads");
 		parser.parseLine("A B 1 2 3/4");
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.degrees), vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(4, Angle.gradians), vector.backsightInclination);
+		Assert.assertEquals(Angle.degrees(3), vector.frontsightInclination);
+		Assert.assertEquals(Angle.gradians(4), vector.backsightInclination);
 	}
 
 	@Test
 	public void testV_VbUnit() throws SegmentParseException {
 		parser.parseLine("#units v/vb=grads");
 		parser.parseLine("A B 1 2 3/4");
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.gradians), vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(4, Angle.gradians), vector.backsightInclination);
+		Assert.assertEquals(Angle.gradians(3), vector.frontsightInclination);
+		Assert.assertEquals(Angle.gradians(4), vector.backsightInclination);
 	}
 
 	@Test
@@ -317,9 +317,9 @@ public class SurveyLineParsingTests {
 	public void basicRectangularVectorTest() throws SegmentParseException {
 		parser.parseLine("#units rect");
 		parser.parseLine("A B 1 2 3");
-		Assert.assertEquals(new UnitizedDouble<>(1, Length.meters), vector.east);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.north);
-		Assert.assertEquals(new UnitizedDouble<>(3, Length.meters), vector.elevation);
+		Assert.assertEquals(Length.meters(1), vector.east);
+		Assert.assertEquals(Length.meters(2), vector.north);
+		Assert.assertEquals(Length.meters(3), vector.elevation);
 
 		assertThrows(() -> parser.parseLine("A B 1 2"));
 	}
@@ -328,17 +328,17 @@ public class SurveyLineParsingTests {
 	public void testUpCanBeOmitted() throws SegmentParseException {
 		parser.parseLine("#units rect order=ne");
 		parser.parseLine("A B 1 2");
-		Assert.assertEquals(new UnitizedDouble<>(1, Length.meters), vector.north);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.east);
+		Assert.assertEquals(Length.meters(1), vector.north);
+		Assert.assertEquals(Length.meters(2), vector.east);
 	}
 
 	@Test
 	public void testMeasurementsCanBeReordered() throws SegmentParseException {
 		parser.parseLine("#units rect order=nue");
 		parser.parseLine("A B 1 2 3");
-		Assert.assertEquals(new UnitizedDouble<>(1, Length.meters), vector.north);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.elevation);
-		Assert.assertEquals(new UnitizedDouble<>(3, Length.meters), vector.east);
+		Assert.assertEquals(Length.meters(1), vector.north);
+		Assert.assertEquals(Length.meters(2), vector.elevation);
+		Assert.assertEquals(Length.meters(3), vector.east);
 	}
 
 	@Test
@@ -352,9 +352,9 @@ public class SurveyLineParsingTests {
 		parser.parseLine("#units rect");
 		parser.parseLine("A <1 2 3 4");
 		Assert.assertEquals("<1", vector.to);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.east);
-		Assert.assertEquals(new UnitizedDouble<>(3, Length.meters), vector.north);
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.elevation);
+		Assert.assertEquals(Length.meters(2), vector.east);
+		Assert.assertEquals(Length.meters(3), vector.north);
+		Assert.assertEquals(Length.meters(4), vector.elevation);
 		Assert.assertNull(vector.left);
 		Assert.assertNull(vector.right);
 		Assert.assertNull(vector.up);
@@ -362,13 +362,13 @@ public class SurveyLineParsingTests {
 
 		parser.parseLine("A *1 2 3 4 *5,6,7,8*");
 		Assert.assertEquals("*1", vector.to);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.east);
-		Assert.assertEquals(new UnitizedDouble<>(3, Length.meters), vector.north);
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.elevation);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(8, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(2), vector.east);
+		Assert.assertEquals(Length.meters(3), vector.north);
+		Assert.assertEquals(Length.meters(4), vector.elevation);
+		Assert.assertEquals(Length.meters(5), vector.left);
+		Assert.assertEquals(Length.meters(6), vector.right);
+		Assert.assertEquals(Length.meters(7), vector.up);
+		Assert.assertEquals(Length.meters(8), vector.down);
 	}
 
 	@Test
@@ -382,25 +382,25 @@ public class SurveyLineParsingTests {
 	public void testCompassTapeMeasurementsCanBeReordered() throws SegmentParseException {
 		parser.parseLine("#units order=avd");
 		parser.parseLine("A B 1 2 3");
-		Assert.assertEquals(new UnitizedDouble<>(1, Angle.degrees), vector.frontsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(2, Angle.degrees), vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(3, Length.meters), vector.distance);
+		Assert.assertEquals(Angle.degrees(1), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(2), vector.frontsightInclination);
+		Assert.assertEquals(Length.meters(3), vector.distance);
 	}
 
 	@Test
 	public void testInclinationCanBeOmittedFromOrder() throws SegmentParseException {
 		parser.parseLine("#units order=da");
 		parser.parseLine("A B 1 2");
-		Assert.assertEquals(new UnitizedDouble<>(1, Length.meters), vector.distance);
-		Assert.assertEquals(new UnitizedDouble<>(2, Angle.degrees), vector.frontsightAzimuth);
+		Assert.assertEquals(Length.meters(1), vector.distance);
+		Assert.assertEquals(Angle.degrees(2), vector.frontsightAzimuth);
 		Assert.assertNull(vector.frontsightInclination);
 	}
 
 	@Test
 	public void testBasicInstrumentAndTargetHeights() throws SegmentParseException {
 		parser.parseLine("A B 1 2 3 4 5");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.instrumentHeight);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.targetHeight);
+		Assert.assertEquals(Length.meters(4), vector.instrumentHeight);
+		Assert.assertEquals(Length.meters(5), vector.targetHeight);
 	}
 
 	//
@@ -408,23 +408,23 @@ public class SurveyLineParsingTests {
 	public void testInstrumentAndTargetHeightsAreAffectedBySUnit() throws SegmentParseException {
 		parser.parseLine("#units s=feet");
 		parser.parseLine("A B 1 2 3 4 5");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.feet), vector.instrumentHeight);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.feet), vector.targetHeight);
+		Assert.assertEquals(Length.feet(4), vector.instrumentHeight);
+		Assert.assertEquals(Length.feet(5), vector.targetHeight);
 	}
 
 	@Test
 	public void testInstrumentAndTargetHeightsAreNotAffectedByDUnit() throws SegmentParseException {
 		parser.parseLine("#units d=feet");
 		parser.parseLine("A B 1 2 3 4 5");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.instrumentHeight);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.targetHeight);
+		Assert.assertEquals(Length.meters(4), vector.instrumentHeight);
+		Assert.assertEquals(Length.meters(5), vector.targetHeight);
 	}
 
 	@Test
 	public void testInstTargetHeightsWithInclinationOmitted() throws SegmentParseException {
 		parser.parseLine("A B 1 2 -- 4 5");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.instrumentHeight);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.targetHeight);
+		Assert.assertEquals(Length.meters(4), vector.instrumentHeight);
+		Assert.assertEquals(Length.meters(5), vector.targetHeight);
 	}
 
 	@Test
@@ -457,86 +457,86 @@ public class SurveyLineParsingTests {
 
 		parser.parseLine("A B 1 2 3 (1000f,r4.5f)");
 		Assert.assertTrue(vector.horizontalVariance instanceof VarianceOverride.Length);
-		Assert.assertEquals(new UnitizedDouble<>(1000, Length.feet),
+		Assert.assertEquals(Length.feet(1000),
 				((VarianceOverride.Length) vector.horizontalVariance).lengthOverride);
 		Assert.assertTrue(vector.verticalVariance instanceof VarianceOverride.RMSError);
-		Assert.assertEquals(new UnitizedDouble<>(4.5, Length.feet),
+		Assert.assertEquals(Length.feet(4.5),
 				((VarianceOverride.RMSError) vector.verticalVariance).error);
 	}
 
 	@Test
 	public void testBasicLruds() throws SegmentParseException {
 		parser.parseLine("A B 1 2 3 *4,5,6,7*");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(4), vector.left);
+		Assert.assertEquals(Length.meters(5), vector.right);
+		Assert.assertEquals(Length.meters(6), vector.up);
+		Assert.assertEquals(Length.meters(7), vector.down);
 
 		parser.parseLine("A B 1 2 3 *4 5 6 7*");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(4), vector.left);
+		Assert.assertEquals(Length.meters(5), vector.right);
+		Assert.assertEquals(Length.meters(6), vector.up);
+		Assert.assertEquals(Length.meters(7), vector.down);
 
 		parser.parseLine("A B 1 2 3 <4 5 6 7>");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(4), vector.left);
+		Assert.assertEquals(Length.meters(5), vector.right);
+		Assert.assertEquals(Length.meters(6), vector.up);
+		Assert.assertEquals(Length.meters(7), vector.down);
 
 		parser.parseLine("A B 1 2 3 <4,5,6,7>");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(4), vector.left);
+		Assert.assertEquals(Length.meters(5), vector.right);
+		Assert.assertEquals(Length.meters(6), vector.up);
+		Assert.assertEquals(Length.meters(7), vector.down);
 	}
 
 	@Test
 	public void testCanOmitLruds() throws SegmentParseException {
 		parser.parseLine("A B 1 2 3 <4,-,6,-->");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.left);
+		Assert.assertEquals(Length.meters(4), vector.left);
 		Assert.assertNull(vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.meters), vector.up);
+		Assert.assertEquals(Length.meters(6), vector.up);
 		Assert.assertNull(vector.down);
 	}
 
 	@Test
 	public void testNegativeLrudsAllowed() throws SegmentParseException {
 		parser.parseLine("A B 1 2 3 *-4,5,-6f,7*");
-		Assert.assertEquals(new UnitizedDouble<>(-4, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(-6, Length.feet), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(-4), vector.left);
+		Assert.assertEquals(Length.meters(5), vector.right);
+		Assert.assertEquals(Length.feet(-6), vector.up);
+		Assert.assertEquals(Length.meters(7), vector.down);
 		Assert.assertEquals(2, messages.size());
 	}
 
 	@Test
 	public void testCanUnitizeIndividualLruds() throws SegmentParseException {
 		parser.parseLine("A B 1 2 3 *4f,5m,6i3,i7*");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.feet), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(6 * 12 + 3, Length.inches), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.inches), vector.down);
+		Assert.assertEquals(Length.feet(4), vector.left);
+		Assert.assertEquals(Length.meters(5), vector.right);
+		Assert.assertEquals(Length.inches(6 * 12 + 3), vector.up);
+		Assert.assertEquals(Length.inches(7), vector.down);
 	}
 
 	@Test
 	public void testSUnitAffectsLruds() throws SegmentParseException {
 		parser.parseLine("#units s=feet");
 		parser.parseLine("A B 1 2 3 *4,5,6,7*");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.feet), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.feet), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.feet), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.feet), vector.down);
+		Assert.assertEquals(Length.feet(4), vector.left);
+		Assert.assertEquals(Length.feet(5), vector.right);
+		Assert.assertEquals(Length.feet(6), vector.up);
+		Assert.assertEquals(Length.feet(7), vector.down);
 	}
 
 	@Test
 	public void testDUnitDoesntAffectLruds() throws SegmentParseException {
 		parser.parseLine("#units d=feet");
 		parser.parseLine("A B 1 2 3 *4,5,6,7*");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(4), vector.left);
+		Assert.assertEquals(Length.meters(5), vector.right);
+		Assert.assertEquals(Length.meters(6), vector.up);
+		Assert.assertEquals(Length.meters(7), vector.down);
 	}
 
 	@Test
@@ -579,19 +579,19 @@ public class SurveyLineParsingTests {
 	public void testCanChangeLrudOrder() throws SegmentParseException {
 		parser.parseLine("#units lrud=from:urld");
 		parser.parseLine("A B 1 2 3 *4,5,6,7*");
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(4), vector.up);
+		Assert.assertEquals(Length.meters(5), vector.right);
+		Assert.assertEquals(Length.meters(6), vector.left);
+		Assert.assertEquals(Length.meters(7), vector.down);
 	}
 
 	@Test
 	public void testLrudStationNameAmbiguity() throws SegmentParseException {
 		parser.parseLine("A *1 2 3 4");
 		Assert.assertEquals("*1", vector.to);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.distance);
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.degrees), vector.frontsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(4, Angle.degrees), vector.frontsightInclination);
+		Assert.assertEquals(Length.meters(2), vector.distance);
+		Assert.assertEquals(Angle.degrees(3), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(4), vector.frontsightInclination);
 		Assert.assertNull(vector.left);
 		Assert.assertNull(vector.right);
 		Assert.assertNull(vector.up);
@@ -599,9 +599,9 @@ public class SurveyLineParsingTests {
 
 		parser.parseLine("A <1 2 3 4");
 		Assert.assertEquals("<1", vector.to);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.distance);
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.degrees), vector.frontsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(4, Angle.degrees), vector.frontsightInclination);
+		Assert.assertEquals(Length.meters(2), vector.distance);
+		Assert.assertEquals(Angle.degrees(3), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(4), vector.frontsightInclination);
 		Assert.assertNull(vector.left);
 		Assert.assertNull(vector.right);
 		Assert.assertNull(vector.up);
@@ -609,9 +609,9 @@ public class SurveyLineParsingTests {
 
 		parser.parseLine("A <1 2 3 4 (?, ?)");
 		Assert.assertEquals("<1", vector.to);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.distance);
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.degrees), vector.frontsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(4, Angle.degrees), vector.frontsightInclination);
+		Assert.assertEquals(Length.meters(2), vector.distance);
+		Assert.assertEquals(Angle.degrees(3), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(4), vector.frontsightInclination);
 		Assert.assertNull(vector.left);
 		Assert.assertNull(vector.right);
 		Assert.assertNull(vector.up);
@@ -619,90 +619,90 @@ public class SurveyLineParsingTests {
 
 		parser.parseLine("A *1 2 3 4 *5,6,7,8*");
 		Assert.assertEquals("*1", vector.to);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.distance);
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.degrees), vector.frontsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(4, Angle.degrees), vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(8, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(2), vector.distance);
+		Assert.assertEquals(Angle.degrees(3), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(4), vector.frontsightInclination);
+		Assert.assertEquals(Length.meters(5), vector.left);
+		Assert.assertEquals(Length.meters(6), vector.right);
+		Assert.assertEquals(Length.meters(7), vector.up);
+		Assert.assertEquals(Length.meters(8), vector.down);
 
 		parser.parseLine("A *1 2 3 4 4.5 *5,6,7,8*");
 		Assert.assertEquals("*1", vector.to);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.distance);
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.degrees), vector.frontsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(4, Angle.degrees), vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(4.5, Length.meters), vector.instrumentHeight);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(8, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(2), vector.distance);
+		Assert.assertEquals(Angle.degrees(3), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(4), vector.frontsightInclination);
+		Assert.assertEquals(Length.meters(4.5), vector.instrumentHeight);
+		Assert.assertEquals(Length.meters(5), vector.left);
+		Assert.assertEquals(Length.meters(6), vector.right);
+		Assert.assertEquals(Length.meters(7), vector.up);
+		Assert.assertEquals(Length.meters(8), vector.down);
 
 		parser.parseLine("A *1 2 3 4 4.5 4.6 *5,6,7,8,9*");
 		Assert.assertEquals("*1", vector.to);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.distance);
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.degrees), vector.frontsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(4, Angle.degrees), vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(4.5, Length.meters), vector.instrumentHeight);
-		Assert.assertEquals(new UnitizedDouble<>(4.6, Length.meters), vector.targetHeight);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(8, Length.meters), vector.down);
-		Assert.assertEquals(new UnitizedDouble<>(9, Angle.degrees), vector.lrudFacingAzimuth);
+		Assert.assertEquals(Length.meters(2), vector.distance);
+		Assert.assertEquals(Angle.degrees(3), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(4), vector.frontsightInclination);
+		Assert.assertEquals(Length.meters(4.5), vector.instrumentHeight);
+		Assert.assertEquals(Length.meters(4.6), vector.targetHeight);
+		Assert.assertEquals(Length.meters(5), vector.left);
+		Assert.assertEquals(Length.meters(6), vector.right);
+		Assert.assertEquals(Length.meters(7), vector.up);
+		Assert.assertEquals(Length.meters(8), vector.down);
+		Assert.assertEquals(Angle.degrees(9), vector.lrudFacingAzimuth);
 
 		parser.parseLine("A *1 2 3 4 *");
 		Assert.assertNull(vector.to);
 		Assert.assertNull(vector.distance);
 		Assert.assertNull(vector.frontsightAzimuth);
 		Assert.assertNull(vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(1, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(3, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(1), vector.left);
+		Assert.assertEquals(Length.meters(2), vector.right);
+		Assert.assertEquals(Length.meters(3), vector.up);
+		Assert.assertEquals(Length.meters(4), vector.down);
 
 		parser.parseLine("A *1 2 3 4 5*");
 		Assert.assertNull(vector.to);
 		Assert.assertNull(vector.distance);
 		Assert.assertNull(vector.frontsightAzimuth);
 		Assert.assertNull(vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(1, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(3, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.down);
-		Assert.assertEquals(new UnitizedDouble<>(5, Angle.degrees), vector.lrudFacingAzimuth);
+		Assert.assertEquals(Length.meters(1), vector.left);
+		Assert.assertEquals(Length.meters(2), vector.right);
+		Assert.assertEquals(Length.meters(3), vector.up);
+		Assert.assertEquals(Length.meters(4), vector.down);
+		Assert.assertEquals(Angle.degrees(5), vector.lrudFacingAzimuth);
 
 		parser.parseLine("A *1 2 3 4 5 C*");
 		Assert.assertNull(vector.to);
 		Assert.assertNull(vector.distance);
 		Assert.assertNull(vector.frontsightAzimuth);
 		Assert.assertNull(vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(1, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(3, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.down);
-		Assert.assertEquals(new UnitizedDouble<>(5, Angle.degrees), vector.lrudFacingAzimuth);
+		Assert.assertEquals(Length.meters(1), vector.left);
+		Assert.assertEquals(Length.meters(2), vector.right);
+		Assert.assertEquals(Length.meters(3), vector.up);
+		Assert.assertEquals(Length.meters(4), vector.down);
+		Assert.assertEquals(Angle.degrees(5), vector.lrudFacingAzimuth);
 		Assert.assertTrue(vector.cFlag);
 
 		parser.parseLine("A <1 2 3 4 <5,6,7,8>");
 		Assert.assertEquals("<1", vector.to);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.distance);
-		Assert.assertEquals(new UnitizedDouble<>(3, Angle.degrees), vector.frontsightAzimuth);
-		Assert.assertEquals(new UnitizedDouble<>(4, Angle.degrees), vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(5, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(6, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(7, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(8, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(2), vector.distance);
+		Assert.assertEquals(Angle.degrees(3), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(4), vector.frontsightInclination);
+		Assert.assertEquals(Length.meters(5), vector.left);
+		Assert.assertEquals(Length.meters(6), vector.right);
+		Assert.assertEquals(Length.meters(7), vector.up);
+		Assert.assertEquals(Length.meters(8), vector.down);
 
 		parser.parseLine("A <1 2 3 4 >");
 		Assert.assertNull(vector.to);
 		Assert.assertNull(vector.distance);
 		Assert.assertNull(vector.frontsightAzimuth);
 		Assert.assertNull(vector.frontsightInclination);
-		Assert.assertEquals(new UnitizedDouble<>(1, Length.meters), vector.left);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), vector.right);
-		Assert.assertEquals(new UnitizedDouble<>(3, Length.meters), vector.up);
-		Assert.assertEquals(new UnitizedDouble<>(4, Length.meters), vector.down);
+		Assert.assertEquals(Length.meters(1), vector.left);
+		Assert.assertEquals(Length.meters(2), vector.right);
+		Assert.assertEquals(Length.meters(3), vector.up);
+		Assert.assertEquals(Length.meters(4), vector.down);
 
 		assertThrows(() -> parser.parseLine("A *1 2 3 4 *1 2 3 4"));
 		assertThrows(() -> parser.parseLine("A *-- -- -- --"));
@@ -747,7 +747,7 @@ public class SurveyLineParsingTests {
 		Assert.assertEquals("A1", station.name);
 		Assert.assertEquals(new UnitizedDouble<>(-97 - (43 + 52.5 / 60.0) / 60.0, Angle.degrees), station.longitude);
 		Assert.assertEquals(new UnitizedDouble<>(31 + (16 + 45 / 60.0) / 60.0, Angle.degrees), station.latitude);
-		Assert.assertEquals(new UnitizedDouble<>(323, Length.feet), station.elevation);
+		Assert.assertEquals(Length.feet(323), station.elevation);
 		Assert.assertEquals(VarianceOverride.FLOATED, station.horizontalVariance);
 		Assert.assertEquals(VarianceOverride.FLOATED_TRAVERSE, station.verticalVariance);
 		Assert.assertEquals("Entrance", station.note);
@@ -757,27 +757,27 @@ public class SurveyLineParsingTests {
 
 		parser.parseLine("#FIX A4 620775.38 3461050.67 98.45");
 		Assert.assertEquals("A4", station.name);
-		Assert.assertEquals(new UnitizedDouble<>(620775.38, Length.meters), station.east);
-		Assert.assertEquals(new UnitizedDouble<>(3461050.67, Length.meters), station.north);
-		Assert.assertEquals(new UnitizedDouble<>(98.45, Length.meters), station.elevation);
+		Assert.assertEquals(Length.meters(620775.38), station.east);
+		Assert.assertEquals(Length.meters(3461050.67), station.north);
+		Assert.assertEquals(Length.meters(98.45), station.elevation);
 	}
 
 	@Test
 	public void testFixedStationMeasurementsCanBeReordered() throws SegmentParseException {
 		parser.parseLine("#units order=nue");
 		parser.parseLine("#fix a 1 2 3");
-		Assert.assertEquals(new UnitizedDouble<>(1, Length.meters), station.north);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.meters), station.elevation);
-		Assert.assertEquals(new UnitizedDouble<>(3, Length.meters), station.east);
+		Assert.assertEquals(Length.meters(1), station.north);
+		Assert.assertEquals(Length.meters(2), station.elevation);
+		Assert.assertEquals(Length.meters(3), station.east);
 	}
 
 	@Test
 	public void testFixedStationMeasurementsAffectedByDUnit() throws SegmentParseException {
 		parser.parseLine("#units d=feet");
 		parser.parseLine("#fix a 1 2 3");
-		Assert.assertEquals(new UnitizedDouble<>(1, Length.feet), station.east);
-		Assert.assertEquals(new UnitizedDouble<>(2, Length.feet), station.north);
-		Assert.assertEquals(new UnitizedDouble<>(3, Length.feet), station.elevation);
+		Assert.assertEquals(Length.feet(1), station.east);
+		Assert.assertEquals(Length.feet(2), station.north);
+		Assert.assertEquals(Length.feet(3), station.elevation);
 	}
 
 	@Test
@@ -866,23 +866,23 @@ public class SurveyLineParsingTests {
 	    parser.parseLine("a b 1 2 3");
 	    Assert.assertEquals("a" ,  vector.from);
 	    Assert.assertEquals("b" ,  vector.to);
-	    Assert.assertEquals(new UnitizedDouble<>(1, Length.meters) ,  vector.distance);
-	    Assert.assertEquals(new UnitizedDouble<>(2, Angle.degrees) ,  vector.frontsightAzimuth);
-	    Assert.assertEquals(new UnitizedDouble<>(3, Angle.degrees) ,  vector.frontsightInclination);
+	    Assert.assertEquals(Length.meters(1) ,  vector.distance);
+	    Assert.assertEquals(Angle.degrees(2) ,  vector.frontsightAzimuth);
+	    Assert.assertEquals(Angle.degrees(3) ,  vector.frontsightInclination);
 	}
 	
 	@Test
 	public void testAverageInclination() throws SegmentParseException {
 		MutableWallsUnits units = new MutableWallsUnits();
 		units.setTypevbCorrected(true);
-	    Assert.assertEquals(new UnitizedDouble<>(2, Angle.degrees) ,  units.averageInclination(new UnitizedDouble<>(3, Angle.degrees), new UnitizedDouble<>(1, Angle.degrees)));
-	    Assert.assertEquals(new UnitizedDouble<>(2, Angle.degrees) ,  units.averageInclination(new UnitizedDouble<>(1, Angle.degrees), new UnitizedDouble<>(3, Angle.degrees)));
-	    Assert.assertEquals(new UnitizedDouble<>(3, Angle.degrees) ,  units.averageInclination(new UnitizedDouble<>(3, Angle.degrees), null));
-	    Assert.assertEquals(new UnitizedDouble<>(3, Angle.degrees) ,  units.averageInclination(null, new UnitizedDouble<>(3, Angle.degrees)));
+	    Assert.assertEquals(Angle.degrees(2) ,  units.averageInclination(Angle.degrees(3), Angle.degrees(1)));
+	    Assert.assertEquals(Angle.degrees(2) ,  units.averageInclination(Angle.degrees(1), Angle.degrees(3)));
+	    Assert.assertEquals(Angle.degrees(3) ,  units.averageInclination(Angle.degrees(3), null));
+	    Assert.assertEquals(Angle.degrees(3) ,  units.averageInclination(null, Angle.degrees(3)));
 	
 	    units.setTypevbCorrected(false);
-	    Assert.assertEquals(new UnitizedDouble<>(2, Angle.degrees) ,  units.averageInclination(new UnitizedDouble<>(3, Angle.degrees), new UnitizedDouble<>(-1, Angle.degrees)));
-	    Assert.assertEquals(new UnitizedDouble<>(2, Angle.degrees) ,  units.averageInclination(new UnitizedDouble<>(1, Angle.degrees), new UnitizedDouble<>(-3, Angle.degrees)));
-	    Assert.assertEquals(new UnitizedDouble<>(-3, Angle.degrees) ,  units.averageInclination(null, new UnitizedDouble<>(3, Angle.degrees)));
+	    Assert.assertEquals(Angle.degrees(2) ,  units.averageInclination(Angle.degrees(3), Angle.degrees(-1)));
+	    Assert.assertEquals(Angle.degrees(2) ,  units.averageInclination(Angle.degrees(1), Angle.degrees(-3)));
+	    Assert.assertEquals(Angle.degrees(-3) ,  units.averageInclination(null, Angle.degrees(3)));
 	}
 }

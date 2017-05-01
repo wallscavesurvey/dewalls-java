@@ -1,6 +1,6 @@
 package org.andork.walls.srv;
 
-import static org.andork.walls.srv.LineParserAssertions.assertThrows;
+import static org.andork.walls.LineParserAssertions.assertThrows;
 
 import org.andork.segment.SegmentParseException;
 import org.andork.unit.Angle;
@@ -35,7 +35,7 @@ public class AzimuthParsingTests {
 	public void testPercentGradeForbidden() throws SegmentParseException {
 		WallsSurveyParser parser = new WallsSurveyParser("2.5p");
 		Assert.assertEquals(
-				new UnitizedDouble<>(2.5, Angle.degrees),
+				Angle.degrees(2.5),
 				parser.azimuth(Angle.degrees));
 		assertThrows(parser::endOfLine);
 	}
@@ -43,7 +43,7 @@ public class AzimuthParsingTests {
 	@Test
 	public void testNegativeNumbersInAzimuthOffset() throws SegmentParseException {
 		Assert.assertEquals(
-				new UnitizedDouble<>(-2.5, Angle.degrees),
+				Angle.degrees(-2.5),
 				new WallsSurveyParser("-2.5").azimuthOffset(Angle.degrees));
 	}
 	
@@ -58,7 +58,7 @@ public class AzimuthParsingTests {
 				new UnitizedDouble<>(5 + (4 + 23 / 60.0) / 60.0, Angle.degrees),
 				new WallsSurveyParser("5:4:23").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(5 + 4 / 60.0, Angle.degrees),
+				Angle.degrees(5 + 4 / 60.0),
 				new WallsSurveyParser("5:4").azimuth(Angle.degrees));
 		Assert.assertEquals(
 				new UnitizedDouble<>(5 + (23 / 60.0) / 60.0, Angle.degrees),
@@ -68,60 +68,60 @@ public class AzimuthParsingTests {
 				new WallsSurveyParser("::23.5").azimuth(Angle.degrees).doubleValue(Angle.degrees),
 				1e-9);
 		Assert.assertEquals(
-				new UnitizedDouble<>(4 / 60.0, Angle.degrees),
+				Angle.degrees(4 / 60.0),
 				new WallsSurveyParser(":4").azimuth(Angle.degrees));
 	}
 	
 	@Test
 	public void testBasicQuadrants() throws SegmentParseException {
 		Assert.assertEquals(
-				new UnitizedDouble<>(30, Angle.degrees),
+				Angle.degrees(30),
 				new WallsSurveyParser("N30E").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(330, Angle.degrees),
+				Angle.degrees(330),
 				new WallsSurveyParser("N30W").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(60, Angle.degrees),
+				Angle.degrees(60),
 				new WallsSurveyParser("E30N").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(120, Angle.degrees),
+				Angle.degrees(120),
 				new WallsSurveyParser("E30S").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(150, Angle.degrees),
+				Angle.degrees(150),
 				new WallsSurveyParser("S30E").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(210, Angle.degrees),
+				Angle.degrees(210),
 				new WallsSurveyParser("S30W").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(240, Angle.degrees),
+				Angle.degrees(240),
 				new WallsSurveyParser("W30S").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(300, Angle.degrees),
+				Angle.degrees(300),
 				new WallsSurveyParser("W30N").azimuth(Angle.degrees));
 	}
 	
 	@Test
 	public void testAdvancedQuadrants() throws SegmentParseException {
 		Assert.assertEquals(
-				new UnitizedDouble<>(30.5, Angle.degrees),
+				Angle.degrees(30.5),
 				new WallsSurveyParser("N30.5E").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(329.5, Angle.degrees),
+				Angle.degrees(329.5),
 				new WallsSurveyParser("N30.5W").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(30.5 + 30 / 3600.0, Angle.degrees),
+				Angle.degrees(30.5 + 30 / 3600.0),
 				new WallsSurveyParser("N30:30:30E").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(30 + 30 / 3600.0, Angle.degrees),
+				Angle.degrees(30 + 30 / 3600.0),
 				new WallsSurveyParser("N30::30E").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(30.5 / 3600.0, Angle.degrees),
+				Angle.degrees(30.5 / 3600.0),
 				new WallsSurveyParser("N::30.5E").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(0.5, Angle.degrees),
+				Angle.degrees(0.5),
 				new WallsSurveyParser("N:30E").azimuth(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(30, Angle.gradians).in(Angle.degrees),
+				Angle.gradians(30).in(Angle.degrees),
 				new WallsSurveyParser("N30gE").azimuth(Angle.degrees));
 	}
 	

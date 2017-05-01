@@ -1,6 +1,6 @@
 package org.andork.walls.srv;
 
-import static org.andork.walls.srv.LineParserAssertions.assertThrows;
+import static org.andork.walls.LineParserAssertions.assertThrows;
 
 import org.andork.segment.SegmentParseException;
 import org.andork.unit.Angle;
@@ -54,7 +54,7 @@ public class InclinationParsingTests {
 				new UnitizedDouble<>(5 + (4 + 23 / 60.0) / 60.0, Angle.degrees),
 				new WallsSurveyParser("5:4:23").inclination(Angle.degrees));
 		Assert.assertEquals(
-				new UnitizedDouble<>(5 + 4 / 60.0, Angle.degrees),
+				Angle.degrees(5 + 4 / 60.0),
 				new WallsSurveyParser("5:4").inclination(Angle.degrees));
 		Assert.assertEquals(
 				new UnitizedDouble<>(-5 - (23 / 60.0) / 60.0, Angle.degrees),
@@ -64,7 +64,7 @@ public class InclinationParsingTests {
 				new WallsSurveyParser("::23.5").inclination(Angle.degrees).doubleValue(Angle.degrees),
 				1e-9);
 		Assert.assertEquals(
-				new UnitizedDouble<>(-4 / 60.0, Angle.degrees),
+				Angle.degrees(-4 / 60.0),
 				new WallsSurveyParser("-:4").inclination(Angle.degrees));
 	}
 

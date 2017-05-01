@@ -3,10 +3,10 @@ import org.andork.unit.Angle;
 import org.andork.unit.UnitizedDouble;
 
 public enum CardinalDirection {
-	NORTH(new UnitizedDouble<>(0, Angle.degrees)), EAST(new UnitizedDouble<>(90, Angle.degrees)), SOUTH(
-			new UnitizedDouble<>(180, Angle.degrees)), WEST(new UnitizedDouble<>(270, Angle.degrees));
+	NORTH(Angle.degrees(0)), EAST(Angle.degrees(90)), SOUTH(
+			Angle.degrees(180)), WEST(Angle.degrees(270));
 
-	private static final UnitizedDouble<Angle> THREESIXTY = new UnitizedDouble<>(360, Angle.degrees);
+	private static final UnitizedDouble<Angle> THREESIXTY = Angle.degrees(360);
 
 	public final UnitizedDouble<Angle> angle;
 

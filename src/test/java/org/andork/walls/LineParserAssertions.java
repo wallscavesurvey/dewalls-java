@@ -1,4 +1,4 @@
-package org.andork.walls.srv;
+package org.andork.walls;
 
 import org.andork.walls.LineParser.Production;
 import org.andork.walls.LineParser.VoidProduction;
