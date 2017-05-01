@@ -8,6 +8,7 @@ import java.util.List;
 import org.andork.segment.Segment;
 import org.andork.segment.SegmentParseException;
 import org.andork.unit.Angle;
+import org.andork.unit.Area;
 import org.andork.unit.Length;
 import org.andork.unit.Unit;
 import org.andork.unit.UnitizedDouble;
@@ -116,20 +117,17 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 
 				if (heightOffset.abs().sub(tapeDist).abs().compareTo(tapeDist.mul(1e-8)) < 0) {
 					// vertical shot
-					stationToStationInc = heightOffset.isPositive() ? Angle.degrees(90.0)
+					stationToStationInc = heightOffset.isPositive()
+							? Angle.degrees(90.0)
 							: Angle.degrees(-90.0);
 					stationToStationDist = heightOffset.add(units.getInch()).abs();
 				} else {
 					if (units.getInch().isNonzero()) {
-						Unit<Length> unit = tapeDist.unit;
-						double tapeDistValue = tapeDist.doubleValue(unit);
-						double heightOffsetValue = heightOffset.doubleValue(unit);
-						double horizDistance = Math.sqrt(
-								tapeDistValue * tapeDistValue - heightOffsetValue * heightOffsetValue);
-						double totalHeightOffset = heightOffset.add(units.getInch()).doubleValue(unit);
-						stationToStationDist = new UnitizedDouble<>(
-								Math.sqrt(horizDistance * horizDistance + totalHeightOffset * totalHeightOffset),
-								unit);
+						UnitizedDouble<Length> horizDistance = Area
+								.sqrt(Area.square(tapeDist).sub(Area.square(heightOffset)));
+						UnitizedDouble<Length> totalHeightOffset = heightOffset.add(units.getInch());
+						stationToStationDist = Area
+								.sqrt(Area.square(horizDistance).add(Area.square(totalHeightOffset)));
 						stationToStationInc = Angle.atan2(totalHeightOffset, horizDistance);
 					} else {
 						stationToStationInc = Angle.asin(heightOffset.div(tapeDist));
@@ -160,26 +158,21 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 							sourceSegment);
 				}
 
-				Unit<Length> unit = tapeDist.unit;
-				double tapeDistValue = tapeDist.doubleValue(unit);
-
-				double deltaCosInc = delta.mul(Angle.cos(inc)).doubleValue(unit);
-
 				// compute instrument to target distance
 				// it's difficult to justify this equation in pure text, it requires a geometric proof
-				UnitizedDouble<Length> instToTargetDist = new UnitizedDouble<>(
-						Math.sqrt(tapeDistValue * tapeDistValue - deltaCosInc * deltaCosInc), unit)
-								.sub(delta.mul(Angle.sin(inc)));
+				UnitizedDouble<Length> instToTargetDist = Area
+						.sqrt(Area.square(tapeDist).sub(Area.square(delta.mul(Angle.cos(inc)))))
+						.sub(delta.mul(Angle.sin(inc)));
 
 				// height change between inst to target vector and final corrected vector
 				UnitizedDouble<Length> totalDelta = instrumentHeight.sub(targetHeight).add(units.getInch());
 
 				// compute station to station distance and inclination
-				double term1 = instToTargetDist.mul(Angle.sin(inc)).add(totalDelta).doubleValue(unit);
-				double term2 = instToTargetDist.mul(Angle.cos(inc)).doubleValue(unit);
-				stationToStationDist = new UnitizedDouble<>(
-						Math.sqrt(term1 * term1 + term2 * term2), unit);
-				stationToStationInc = Angle.atan2(instToTargetDist.mul(Angle.sin(inc)).add(totalDelta),
+				stationToStationDist = Area.sqrt(
+						Area.square(instToTargetDist.mul(Angle.sin(inc)).add(totalDelta))
+								.add(Area.square(instToTargetDist.mul(Angle.cos(inc)))));
+				stationToStationInc = Angle.atan2(
+						instToTargetDist.mul(Angle.sin(inc)).add(totalDelta),
 						instToTargetDist.mul(Angle.cos(inc)));
 			}
 
@@ -193,8 +186,10 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 				UnitizedDouble<Angle> dInc = stationToStationInc.sub(inc);
 				// since we are moving the original vectors by the difference, we don't need to subtract the
 				// correction factors -- they're already present
-				if (frontsightInclination != null) frontsightInclination = frontsightInclination.add(dInc);
-				if (backsightInclination != null) backsightInclination = backsightInclination.add(dInc);
+				if (frontsightInclination != null)
+					frontsightInclination = frontsightInclination.add(dInc);
+				if (backsightInclination != null)
+					backsightInclination = backsightInclination.add(dInc);
 			}
 
 			// clear out the instrument and target heights, since the vector is now fully determined by the
@@ -207,11 +202,11 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 		return false;
 	}
 
-
 	@Override
 	public void setVerticalVarianceOverride(VarianceOverride override) {
 		verticalVariance = override;
 	}
+
 	@Override
 	public void setHorizontalVarianceOverride(VarianceOverride override) {
 		horizontalVariance = override;

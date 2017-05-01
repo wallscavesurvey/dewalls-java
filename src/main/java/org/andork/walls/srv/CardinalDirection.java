@@ -6,8 +6,6 @@ public enum CardinalDirection {
 	NORTH(Angle.degrees(0)), EAST(Angle.degrees(90)), SOUTH(
 			Angle.degrees(180)), WEST(Angle.degrees(270));
 
-	private static final UnitizedDouble<Angle> THREESIXTY = Angle.degrees(360);
-
 	public final UnitizedDouble<Angle> angle;
 
 	private CardinalDirection(UnitizedDouble<Angle> angle) {
@@ -24,9 +22,9 @@ public enum CardinalDirection {
 	}
 
 	public UnitizedDouble<Angle> quadrant(CardinalDirection to, UnitizedDouble<Angle> rotation) {
-		UnitizedDouble<Angle> result = nonnormQuadrant(to, rotation).mod(THREESIXTY);
+		UnitizedDouble<Angle> result = nonnormQuadrant(to, rotation).mod(Angle.degrees(360));
 		return result.doubleValue(result.unit) < 0
-				? result.add(THREESIXTY)
+				? result.add(Angle.degrees(360))
 				: result;
 	}
 }
