@@ -61,7 +61,7 @@ public class ApplyHeightCorrectionsTest {
 
 		boolean isDiveShot = tape.get(0) == TapingMethodMeasurement.STATION &&
 				tape.get(1) == TapingMethodMeasurement.STATION &&
-				(!UnitizedDouble.isFinite(vector.frontsightInclination) || vector.frontsightInclination.isZero());
+				instY.isZero() && targetY.isZero();
 
 		if (!isDiveShot && instHeightAboveTape.sub(targetHeightAboveTape).abs().compareTo(vector.distance) > 0) {
 			assertThrows(() -> vector.applyHeightCorrections());
