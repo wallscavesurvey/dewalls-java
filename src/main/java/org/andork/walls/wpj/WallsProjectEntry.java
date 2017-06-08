@@ -229,7 +229,7 @@ public class WallsProjectEntry {
 		if (parent != null) {
 			options = parent.allOptions();
 		}
-		if (!this.options.isEmpty()) {
+		if (this.options != null && !this.options.isEmpty()) {
 			options.add(this.options);
 		}
 		return options;

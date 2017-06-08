@@ -228,9 +228,8 @@ public class WallsProjectParser extends LineParser {
 			// not enough .ENDBOOKs at end?
 			if (currentEntry != null) {
 				messages.add(new WallsMessage("error",
-										  String.format("unexpected end of file: {0}", fileName),
-										  fileName,
-										  lineNumber));
+										  "unexpected end of file: " + fileName,
+										  new Segment("", fileName, lineNumber, 0)));
 				return null;
 			}
 
@@ -241,9 +240,8 @@ public class WallsProjectParser extends LineParser {
 			return projectRoot;	
 		} catch (IOException ex) {
 			messages.add(new WallsMessage("error",
-					  String.format("failed to read from file: {0}", fileName),
-					  fileName,
-					  lineNumber));
+					  "failed to read from file: " + fileName,
+					  new Segment("", fileName, lineNumber, 0)));
 			return null;
 		}
 	}

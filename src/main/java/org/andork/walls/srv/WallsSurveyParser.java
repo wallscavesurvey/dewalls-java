@@ -395,7 +395,6 @@ public class WallsSurveyParser extends LineParser {
 	static final Pattern optionalRx = Pattern.compile("-+");
 	static final Pattern optionalStationRx = Pattern.compile("-+");
 
-	static final Pattern isoDateRx = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
 	static final Pattern usDateRx1 = Pattern.compile("\\d{2}-\\d{2}-\\d{2,4}");
 	static final Pattern usDateRx2 = Pattern.compile("\\d{2}/\\d{2}/\\d{2,4}");
 	static final Pattern usDateRx3 = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}");
@@ -952,16 +951,9 @@ public class WallsSurveyParser extends LineParser {
 		expectIgnoreCase("#date");
 		whitespace();
 		return oneOf(
-				() -> isoDate(),
 				() -> usDate1(),
 				() -> usDate2(),
 				() -> usDate3());
-	}
-
-	Date isoDate() throws SegmentParseExpectedException {
-		Segment dateSegment = expect(isoDateRx, "<DATE>");
-		TemporalAccessor accessor = DateTimeFormatter.ISO_DATE_TIME.parse(dateSegment.toString());
-		return Date.from(Instant.from(accessor));
 	}
 
 	static DateFormat fullDateFormat1 = new SimpleDateFormat("MM-dd-yyyy");
@@ -1474,9 +1466,9 @@ public class WallsSurveyParser extends LineParser {
 			UnitizedDouble<Angle> diff = azmDifference(_vector.frontsightAzimuth, _vector.backsightAzimuth);
 			if (diff.compareTo(_units.getTypeabTolerance().mul(1 + 1e-6)) > 0) {
 				visitor.message(new WallsMessage("warning",
-						String.format("azimuth fs/bs difference ({0}) exceeds tolerance ({1})",
-								diff.toString(),
-								_units.getTypeabTolerance().toString()),
+						String.format("azimuth fs/bs difference (%1$s) exceeds tolerance (%2$s)",
+								diff,
+								_units.getTypeabTolerance()),
 						_azmSegment));
 			}
 		}
@@ -1513,7 +1505,7 @@ public class WallsSurveyParser extends LineParser {
 			UnitizedDouble<Angle> diff = incDifference(_vector.frontsightInclination, _vector.backsightInclination);
 			if (diff.compareTo(_units.getTypevbTolerance().mul(1 + 1e-6)) > 0) {
 				visitor.message(new WallsMessage("warning",
-						String.format("inclination fs/bs difference ({0}) exceeds tolerance ({1})",
+						String.format("inclination fs/bs difference (%1$s) exceeds tolerance (%2$s)",
 								diff.toString(),
 								_units.getTypevbTolerance().toString()),
 						_incSegment));
@@ -1564,7 +1556,7 @@ public class WallsSurveyParser extends LineParser {
 
 	<T extends UnitType<T>> void warnIfNegative(UnitizedDouble<T> measurement, int start, String name) {
 		if (UnitizedDouble.isFinite(measurement) && measurement.get(measurement.unit) < 0) {
-			visitor.message(new WallsMessage("warning", String.format("negative {0} measurement", name),
+			visitor.message(new WallsMessage("warning", String.format("negative %1$s measurement", name),
 					line.substring(start, index)));
 		}
 	}
