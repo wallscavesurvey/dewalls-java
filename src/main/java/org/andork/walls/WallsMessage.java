@@ -1,7 +1,5 @@
 package org.andork.walls;
 
-import java.util.Objects;
-
 import org.andork.segment.Segment;
 import org.andork.segment.SegmentParseException;
 

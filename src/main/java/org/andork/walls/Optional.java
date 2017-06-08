@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  * present, {@code isPresent()} will return {@code true} and {@code get()} will
  * return the value.
  *
- * Just like Optional from Java 1.8, except that it allows null.
+ * Just like Optional from Java 1.8, except that it allows {@code null}.
  *
  * <p>
  * Additional methods that depend on the presence or absence of a contained
