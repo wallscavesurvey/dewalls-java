@@ -1,5 +1,6 @@
 package org.andork.walls.srv;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import org.andork.unit.Angle;
 import org.andork.unit.Length;
 import org.andork.unit.UnitizedDouble;
 
-public class FixedStation implements HasVarianceOverrides, HasNote, HasComment, HasInlineSegment {
+public class FixedStation implements HasVarianceOverrides, HasNote, HasComment, HasInlineSegment, Cloneable {
 	public String name;
 	public UnitizedDouble<Length> north;
 	public UnitizedDouble<Length> east;
@@ -45,5 +46,22 @@ public class FixedStation implements HasVarianceOverrides, HasNote, HasComment, 
 	@Override
 	public void setSegment(List<String> segment) {
 		this.segment = segment;
+	}
+	
+	public void processStationName() {
+		name = units.processStationName(name);
+	}
+	
+	@Override
+	public FixedStation clone() {
+		FixedStation result;
+		try {
+			result = (FixedStation) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+		result.segment = segment == null ? null : new ArrayList<>(segment);
+		result.date = date == null ? null : (Date) date.clone();
+		return result;
 	}
 }
