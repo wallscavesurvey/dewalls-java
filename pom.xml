@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.andork</groupId>
   <artifactId>dewalls</artifactId>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
   <name>Dewalls</name>
   <description>Walls Cave Survey Data Parser</description>
   <dependencies>

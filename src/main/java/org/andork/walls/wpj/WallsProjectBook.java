@@ -2,6 +2,7 @@ package org.andork.walls.wpj;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class WallsProjectBook extends WallsProjectEntry {
@@ -10,7 +11,7 @@ public class WallsProjectBook extends WallsProjectEntry {
 	}
 
 	final List<WallsProjectEntry> children = new ArrayList<>();
-	final List<WallsProjectEntry> unmodifiableChildren = new ArrayList<>(children);
+	final List<WallsProjectEntry> unmodifiableChildren = Collections.unmodifiableList(children);
 	
 	public List<WallsProjectEntry> children() {
 		return unmodifiableChildren;
