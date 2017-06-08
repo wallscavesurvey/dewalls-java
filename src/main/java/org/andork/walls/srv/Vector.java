@@ -79,7 +79,7 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 		double ne2 = northValue * northValue + eastValue * eastValue;
 		UnitizedDouble<Length> ne = new UnitizedDouble<>(Math.sqrt(ne2), north.unit).in(north.unit);
 		UnitizedDouble<Length> up = elevation;
-		if (up == null || !up.isFinite()) {
+		if (!isFinite(up)) {
 			up = new UnitizedDouble<>(0, north.unit);
 		}
 		double upValue = up.doubleValue(north.unit);
@@ -98,8 +98,8 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 
 	public boolean applyHeightCorrections() throws SegmentParseException {
 		if (isVertical() || (units.getInch().isZero() && 
-				(!UnitizedNumber.isFinite(instrumentHeight) || instrumentHeight.isZero()) && 
-				(!UnitizedNumber.isFinite(targetHeight) || targetHeight.isZero()))) {
+				(!isFinite(instrumentHeight) || instrumentHeight.isZero()) && 
+				(!isFinite(targetHeight) || targetHeight.isZero()))) {
 			return false;
 		}
 		// get corrected average inclination (default to zero)
@@ -114,7 +114,7 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 		UnitizedDouble<Length> instrumentHeight = this.instrumentHeight == null
 				? null
 				: this.instrumentHeight.add(units.getIncs());
-		if (!instrumentHeight.isFinite()) {
+		if (!isFinite(instrumentHeight)) {
 			instrumentHeight = new UnitizedDouble<>(0, tapeDist.unit);
 		}
 		UnitizedDouble<Length> targetHeight = this.targetHeight == null
@@ -129,7 +129,7 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 
 		if (units.getTape().get(0) == TapingMethodMeasurement.STATION &&
 				units.getTape().get(1) == TapingMethodMeasurement.STATION &&
-				(inc == null || !inc.isFinite() || inc.isZero())) {
+				(!isFinite(inc) || inc.isZero())) {
 
 			UnitizedDouble<Length> heightOffset = instrumentHeight.sub(targetHeight);
 
@@ -210,10 +210,12 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 			UnitizedDouble<Angle> dInc = stationToStationInc.sub(inc);
 			// since we are moving the original vectors by the difference, we don't need to subtract the
 			// correction factors -- they're already present
-			if (frontsightInclination != null)
+			if (frontsightInclination != null) {
 				frontsightInclination = frontsightInclination.add(dInc);
-			if (backsightInclination != null)
+			}
+			if (backsightInclination != null) {
 				backsightInclination = backsightInclination.add(dInc);
+			}
 		}
 
 		// clear out the instrument and target heights, since the vector is now fully determined by the
