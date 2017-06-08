@@ -3,6 +3,7 @@ package org.andork.walls.srv;
 import static org.andork.walls.LineParserAssertions.assertThrows;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.andork.segment.SegmentParseException;
@@ -25,7 +26,7 @@ public class SurveyLineParsingTests {
 	WallsSurveyParser parser;
 
 	Vector vector;
-	FixedStation station;
+	FixedStation fixedStation;
 	List<WallsMessage> messages;
 	String comment;
 
@@ -33,7 +34,7 @@ public class SurveyLineParsingTests {
 	public void setUp() {
 		parser = new WallsSurveyParser();
 		vector = null;
-		station = null;
+		fixedStation = null;
 		messages = new ArrayList<>();
 		comment = null;
 		parser.setVisitor(new AbstractWallsVisitor() {
@@ -44,7 +45,7 @@ public class SurveyLineParsingTests {
 
 			@Override
 			public void parsedFixStation(FixedStation station) {
-				SurveyLineParsingTests.this.station = station;
+				SurveyLineParsingTests.this.fixedStation = station;
 			}
 
 			@Override
@@ -70,6 +71,54 @@ public class SurveyLineParsingTests {
 		Assert.assertNull(vector.backsightAzimuth);
 		Assert.assertEquals(Angle.degrees(2.3), vector.frontsightInclination);
 		Assert.assertNull(vector.backsightInclination);
+	}
+	
+	@Test
+	public void testVectorSegment() throws SegmentParseException {
+		parser.parseLine("A1 A2 2.5 350 2.3 #S Hello");
+
+		Assert.assertEquals("A1", vector.from);
+		Assert.assertEquals("A2", vector.to);
+		Assert.assertEquals(Length.meters(2.5), vector.distance);
+		Assert.assertEquals(Angle.degrees(350), vector.frontsightAzimuth);
+		Assert.assertNull(vector.backsightAzimuth);
+		Assert.assertEquals(Angle.degrees(2.3), vector.frontsightInclination);
+		Assert.assertNull(vector.backsightInclination);
+		Assert.assertEquals(Arrays.asList("Hello"), vector.segment);
+	}
+	
+	@Test
+	public void testRootSegment() throws SegmentParseException {
+		List<String> segment = Arrays.asList("Hello", "World");
+		parser.segment.addAll(segment);
+		parser.rootSegment.addAll(segment);
+
+		parser.parseLine("A1 A2 2.5 350 2.3");
+		Assert.assertEquals(segment, vector.segment);		
+		parser.parseLine("#FIX A1 W97 N31 323");
+		Assert.assertEquals(segment, fixedStation.segment);		
+		
+		parser.parseLine("A1 A2 2.5 350 2.3 #S Foo");
+		Assert.assertEquals(Arrays.asList("Hello", "World", "Foo"), vector.segment);		
+		parser.parseLine("#FIX A1 W97 N31 323 #S Foo");
+		Assert.assertEquals(Arrays.asList("Hello", "World", "Foo"), fixedStation.segment);		
+		
+		parser.parseLine("#Seg /Bar");
+		parser.parseLine("A1 A2 2.5 350 2.3");
+		Assert.assertEquals(Arrays.asList("Hello", "World", "Bar"), vector.segment);		
+		parser.parseLine("#FIX A1 W97 N31 323");
+		Assert.assertEquals(Arrays.asList("Hello", "World", "Bar"), fixedStation.segment);		
+
+		parser.parseLine("#Seg Bar");
+		parser.parseLine("A1 A2 2.5 350 2.3");
+		Assert.assertEquals(Arrays.asList("Bar"), vector.segment);
+		parser.parseLine("#FIX A1 W97 N31 323");
+		Assert.assertEquals(Arrays.asList("Bar"), fixedStation.segment);		
+
+		parser.parseLine("A1 A2 2.5 350 2.3 #S /");
+		Assert.assertEquals(segment, vector.segment);		
+		parser.parseLine("#FIX A1 W97 N31 323 #S /");
+		Assert.assertEquals(segment, fixedStation.segment);		
 	}
 
 	@Test
@@ -726,58 +775,58 @@ public class SurveyLineParsingTests {
 	@Test
 	public void testPrefixes() throws SegmentParseException {
 		parser.parseLine("#units prefix=a");
-		Assert.assertEquals("a:b", parser._units.processStationName("b"));
-		Assert.assertEquals("d:b", parser._units.processStationName("d:b"));
-		Assert.assertEquals("b", parser._units.processStationName(":b"));
+		Assert.assertEquals("a:b", parser.units.processStationName("b"));
+		Assert.assertEquals("d:b", parser.units.processStationName("d:b"));
+		Assert.assertEquals("b", parser.units.processStationName(":b"));
 
 		parser.parseLine("#units prefix2=c");
-		Assert.assertEquals("c:a:b", parser._units.processStationName("b"));
-		Assert.assertEquals("c::b", parser._units.processStationName(":b"));
-		Assert.assertEquals("c:d:b", parser._units.processStationName("d:b"));
-		Assert.assertEquals("b", parser._units.processStationName("::b"));
-		Assert.assertEquals("b", parser._units.processStationName(":::::b"));
+		Assert.assertEquals("c:a:b", parser.units.processStationName("b"));
+		Assert.assertEquals("c::b", parser.units.processStationName(":b"));
+		Assert.assertEquals("c:d:b", parser.units.processStationName("d:b"));
+		Assert.assertEquals("b", parser.units.processStationName("::b"));
+		Assert.assertEquals("b", parser.units.processStationName(":::::b"));
 
 		parser.parseLine("#units prefix1");
-		Assert.assertEquals("c::b", parser._units.processStationName("b"));
+		Assert.assertEquals("c::b", parser.units.processStationName("b"));
 	}
 
 	@Test
 	public void testBasicFixedStations() throws SegmentParseException {
 		parser.parseLine("#FIX A1 W97:43:52.5 N31:16:45 323f (?,*) /Entrance #s blah ;dms with ft elevations");
-		Assert.assertEquals("A1", station.name);
-		Assert.assertEquals(new UnitizedDouble<>(-97 - (43 + 52.5 / 60.0) / 60.0, Angle.degrees), station.longitude);
-		Assert.assertEquals(new UnitizedDouble<>(31 + (16 + 45 / 60.0) / 60.0, Angle.degrees), station.latitude);
-		Assert.assertEquals(Length.feet(323), station.elevation);
-		Assert.assertEquals(VarianceOverride.FLOATED, station.horizontalVariance);
-		Assert.assertEquals(VarianceOverride.FLOATED_TRAVERSE, station.verticalVariance);
-		Assert.assertEquals("Entrance", station.note);
-		Assert.assertEquals(1, station.segment.size());
-		Assert.assertEquals("blah", station.segment.get(0));
-		Assert.assertEquals("dms with ft elevations", station.comment);
+		Assert.assertEquals("A1", fixedStation.name);
+		Assert.assertEquals(new UnitizedDouble<>(-97 - (43 + 52.5 / 60.0) / 60.0, Angle.degrees), fixedStation.longitude);
+		Assert.assertEquals(new UnitizedDouble<>(31 + (16 + 45 / 60.0) / 60.0, Angle.degrees), fixedStation.latitude);
+		Assert.assertEquals(Length.feet(323), fixedStation.elevation);
+		Assert.assertEquals(VarianceOverride.FLOATED, fixedStation.horizontalVariance);
+		Assert.assertEquals(VarianceOverride.FLOATED_TRAVERSE, fixedStation.verticalVariance);
+		Assert.assertEquals("Entrance", fixedStation.note);
+		Assert.assertEquals(1, fixedStation.segment.size());
+		Assert.assertEquals("blah", fixedStation.segment.get(0));
+		Assert.assertEquals("dms with ft elevations", fixedStation.comment);
 
 		parser.parseLine("#FIX A4 620775.38 3461050.67 98.45");
-		Assert.assertEquals("A4", station.name);
-		Assert.assertEquals(Length.meters(620775.38), station.east);
-		Assert.assertEquals(Length.meters(3461050.67), station.north);
-		Assert.assertEquals(Length.meters(98.45), station.elevation);
+		Assert.assertEquals("A4", fixedStation.name);
+		Assert.assertEquals(Length.meters(620775.38), fixedStation.east);
+		Assert.assertEquals(Length.meters(3461050.67), fixedStation.north);
+		Assert.assertEquals(Length.meters(98.45), fixedStation.elevation);
 	}
 
 	@Test
 	public void testFixedStationMeasurementsCanBeReordered() throws SegmentParseException {
 		parser.parseLine("#units order=nue");
 		parser.parseLine("#fix a 1 2 3");
-		Assert.assertEquals(Length.meters(1), station.north);
-		Assert.assertEquals(Length.meters(2), station.elevation);
-		Assert.assertEquals(Length.meters(3), station.east);
+		Assert.assertEquals(Length.meters(1), fixedStation.north);
+		Assert.assertEquals(Length.meters(2), fixedStation.elevation);
+		Assert.assertEquals(Length.meters(3), fixedStation.east);
 	}
 
 	@Test
 	public void testFixedStationMeasurementsAffectedByDUnit() throws SegmentParseException {
 		parser.parseLine("#units d=feet");
 		parser.parseLine("#fix a 1 2 3");
-		Assert.assertEquals(Length.feet(1), station.east);
-		Assert.assertEquals(Length.feet(2), station.north);
-		Assert.assertEquals(Length.feet(3), station.elevation);
+		Assert.assertEquals(Length.feet(1), fixedStation.east);
+		Assert.assertEquals(Length.feet(2), fixedStation.north);
+		Assert.assertEquals(Length.feet(3), fixedStation.elevation);
 	}
 
 	@Test
@@ -792,11 +841,11 @@ public class SurveyLineParsingTests {
 		parser.parseLine("#units lrud=from:rldu");
 		parser.parseLine("#units save");
 		parser.parseLine("#units reset");
-		Assert.assertEquals("LRUD", parser._units.lrudOrderString());
+		Assert.assertEquals("LRUD", parser.units.lrudOrderString());
 		parser.parseLine("#units restore");
-		Assert.assertEquals("RLDU", parser._units.lrudOrderString());
+		Assert.assertEquals("RLDU", parser.units.lrudOrderString());
 		parser.parseLine("#units restore");
-		Assert.assertEquals("URLD", parser._units.lrudOrderString());
+		Assert.assertEquals("URLD", parser.units.lrudOrderString());
 	}
 
 	@Test
@@ -821,25 +870,25 @@ public class SurveyLineParsingTests {
 	@Test
 	public void testWallsCrazyMacros() throws SegmentParseException {
 		parser.parseLine("#units $hello=\"der=vad pre\" $world=\"fix1=hello feet\"");
-		Assert.assertEquals("der=vad pre", parser._macros.get("hello"));
-		Assert.assertEquals("fix1=hello feet", parser._macros.get("world"));
+		Assert.assertEquals("der=vad pre", parser.macros.get("hello"));
+		Assert.assertEquals("fix1=hello feet", parser.macros.get("world"));
 
 		parser.parseLine("#units or$(hello)$(world)");
 
-		Assert.assertEquals(3, parser._units.getCtOrder().size());
-		Assert.assertTrue(parser._units.getPrefix().size() >= 1);
+		Assert.assertEquals(3, parser.units.getCtOrder().size());
+		Assert.assertTrue(parser.units.getPrefix().size() >= 1);
 
-		Assert.assertEquals(CtMeasurement.INCLINATION, parser._units.getCtOrder().get(0));
-		Assert.assertEquals(CtMeasurement.AZIMUTH, parser._units.getCtOrder().get(1));
-		Assert.assertEquals(CtMeasurement.DISTANCE, parser._units.getCtOrder().get(2));
+		Assert.assertEquals(CtMeasurement.INCLINATION, parser.units.getCtOrder().get(0));
+		Assert.assertEquals(CtMeasurement.AZIMUTH, parser.units.getCtOrder().get(1));
+		Assert.assertEquals(CtMeasurement.DISTANCE, parser.units.getCtOrder().get(2));
 
-		Assert.assertEquals("hello", parser._units.getPrefix().get(0));
-		Assert.assertEquals(Length.feet, parser._units.getDUnit());
-		Assert.assertEquals(Length.feet, parser._units.getSUnit());
+		Assert.assertEquals("hello", parser.units.getPrefix().get(0));
+		Assert.assertEquals(Length.feet, parser.units.getDUnit());
+		Assert.assertEquals(Length.feet, parser.units.getSUnit());
 
 		parser.parseLine("#units $hello $world");
-		Assert.assertEquals("", parser._macros.get("hello"));
-		Assert.assertEquals("", parser._macros.get("world"));
+		Assert.assertEquals("", parser.macros.get("hello"));
+		Assert.assertEquals("", parser.macros.get("world"));
 
 		assertThrows(() -> parser.parseLine("#units $(undefined)"));
 	}
@@ -861,7 +910,7 @@ public class SurveyLineParsingTests {
 	    Assert.assertEquals("a b 1 2 3" ,  comment);
 	    Assert.assertNull(vector);
 	    parser.parseLine("#units f");
-	    Assert.assertEquals(Length.meters ,  parser._units.getDUnit());
+	    Assert.assertEquals(Length.meters ,  parser.units.getDUnit());
 	    parser.parseLine("#]");
 	    parser.parseLine("a b 1 2 3");
 	    Assert.assertEquals("a" ,  vector.from);
