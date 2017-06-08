@@ -10,6 +10,11 @@ public class WallsProjectBook extends WallsProjectEntry {
 	}
 
 	final List<WallsProjectEntry> children = new ArrayList<>();
+	final List<WallsProjectEntry> unmodifiableChildren = new ArrayList<>(children);
+	
+	public List<WallsProjectEntry> children() {
+		return unmodifiableChildren;
+	}
 
 	public Path absolutePath() {
 		return dir().toAbsolutePath().normalize();

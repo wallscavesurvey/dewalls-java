@@ -198,8 +198,10 @@ public class WallsProjectParser extends LineParser {
 		return Collections.unmodifiableList(messages);
 	}
 	
-	public WallsProjectBook parseFile(String fileName) throws FileNotFoundException {
-		return parseFile(new FileInputStream(fileName), fileName);
+	public WallsProjectBook parseFile(String fileName) throws IOException {
+		try (FileInputStream in = new FileInputStream(fileName)) {
+			return parseFile(in, fileName);
+		}
 	}
 
 	public WallsProjectBook parseFile(InputStream in, String fileName) {

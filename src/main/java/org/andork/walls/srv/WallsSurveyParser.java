@@ -1,5 +1,9 @@
 package org.andork.walls.srv;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -638,13 +642,23 @@ public class WallsSurveyParser extends LineParser {
 
 		return line.toString().substring(start, index);
 	}
+	
+	public void parseFile(File file) throws IOException, SegmentParseException {
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+			int lineNumber = 0;
+			String line;
+			while ((line = reader.readLine()) != null) {
+				parseLine(new Segment(line, file, lineNumber++, 0));
+			}
+		}
+	}
 
-	void parseLine(String line) throws SegmentParseException {
+	public void parseLine(String line) throws SegmentParseException {
 		reset(new Segment(line, null, 0, 0));
 		parseLine();
 	}
 
-	void parseLine(Segment line) throws SegmentParseException {
+	public void parseLine(Segment line) throws SegmentParseException {
 		reset(line);
 		parseLine();
 	}
