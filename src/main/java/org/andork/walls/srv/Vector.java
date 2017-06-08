@@ -11,7 +11,9 @@ import org.andork.segment.SegmentParseException;
 import org.andork.unit.Angle;
 import org.andork.unit.Area;
 import org.andork.unit.Length;
+import org.andork.unit.Unit;
 import org.andork.unit.UnitizedDouble;
+import org.andork.unit.UnitizedNumber;
 
 public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegment, Cloneable {
 	public Segment sourceSegment;
@@ -95,7 +97,9 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 	}
 
 	public boolean applyHeightCorrections() throws SegmentParseException {
-		if (isVertical() || (units.getInch().isZero() && instrumentHeight.isZero() && targetHeight.isZero())) {
+		if (isVertical() || (units.getInch().isZero() && 
+				(!UnitizedNumber.isFinite(instrumentHeight) || instrumentHeight.isZero()) && 
+				(!UnitizedNumber.isFinite(targetHeight) || targetHeight.isZero()))) {
 			return false;
 		}
 		// get corrected average inclination (default to zero)
