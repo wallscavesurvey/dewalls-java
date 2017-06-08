@@ -34,6 +34,7 @@ import org.andork.walls.LineParser;
 import org.andork.walls.Optional;
 import org.andork.walls.SegmentParseExpectedException;
 import org.andork.walls.WallsMessage;
+import org.andork.walls.wpj.WallsProjectEntry;
 
 public class WallsSurveyParser extends LineParser {
 	WallsVisitor visitor = new AbstractWallsVisitor();
@@ -651,6 +652,22 @@ public class WallsSurveyParser extends LineParser {
 				parseLine(new Segment(line, file, lineNumber++, 0));
 			}
 		}
+	}
+	
+	public void parseSurveyEntry(WallsProjectEntry entry) throws SegmentParseException, IOException {
+		if (!entry.isSurvey()) {
+			throw new IllegalArgumentException("entry must be a survey");
+		}
+		for (Segment units : entry.allOptions()) {
+			parseUnitsOptions(units);
+		}
+		if (!entry.segment().isEmpty()) {
+			_segment.clear();
+			_segment.addAll(entry.segment());
+			_rootSegment.clear();
+			_rootSegment.addAll(entry.segment());
+		}
+		parseFile(entry.absolutePath().toFile());
 	}
 
 	public void parseLine(String line) throws SegmentParseException {
