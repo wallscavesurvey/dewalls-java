@@ -3,12 +3,12 @@ package org.andork.walls.lst;
 import org.andork.segment.Segment;
 
 public class StationPosition {
-	Segment prefix;
-	Segment name;
-	double east = Double.NaN;
-	double north = Double.NaN;
-	double up = Double.NaN;
-	Segment note;
+	public Segment prefix;
+	public Segment name;
+	public double east = Double.NaN;
+	public double north = Double.NaN;
+	public double up = Double.NaN;
+	public Segment note;
 
 	public String getNameWithPrefix() {
 		if (name != null && prefix != null && !prefix.isEmpty()) {
