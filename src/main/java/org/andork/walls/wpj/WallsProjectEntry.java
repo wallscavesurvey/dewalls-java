@@ -208,10 +208,10 @@ public class WallsProjectEntry {
 	}
 
 	public Path absolutePath() {
-		String name = this.name == null ? null : this.name.toString();
-		if (name == null || name.isEmpty()) {
+		if (this.name == null || this.name.isEmpty()) {
 			return null;
 		}
+		String name = this.name.toString();
 		if (isSurvey() && !name.matches("\\.[sS][rR][vV]$")) {
 			if (Files.exists(dir().resolve(name + ".SRV").toAbsolutePath().normalize())) {
 				name += ".SRV";
@@ -240,7 +240,7 @@ public class WallsProjectEntry {
 		if (parent != null) {
 			result = parent.segment();
 		}
-		if (nameDefinesSegment() && !name.isEmpty()) {
+		if (nameDefinesSegment() && name != null && !name.isEmpty()) {
 			result.add(name.toString());
 		}
 		return result;

@@ -1,12 +1,11 @@
 package org.andork.walls.wpj;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 import org.andork.segment.SegmentParseException;
 import org.andork.unit.Angle;
 import org.andork.unit.Length;
-import org.andork.unit.UnitizedDouble;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,7 +22,7 @@ public class WallsProjectParserTests {
 
 		Assert.assertNotNull(projectRoot);
 		Assert.assertEquals("Actun Kaua - North Maze", projectRoot.title);
-		Assert.assertEquals("KAUA-NM", projectRoot.name.toString());
+		Assert.assertEquals("KAUA-NM", Objects.toString(projectRoot.name, null));
 		Assert.assertEquals(WallsProjectEntry.View.NorthOrEast, projectRoot.defaultViewAfterCompilation());
 		Assert.assertFalse(projectRoot.preserveVertShotLength());
 		Assert.assertFalse(projectRoot.preserveVertShotOrientation());
