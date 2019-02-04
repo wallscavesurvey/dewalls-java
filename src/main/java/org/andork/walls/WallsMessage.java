@@ -17,4 +17,8 @@ public class WallsMessage {
 	public WallsMessage(SegmentParseException ex) {
 		this("error", ex.getLocalizedMessage(), ex.getSegment());
 	}
+	
+	public String toString() {
+		return new SegmentParseException(message, segment).toString();
+	}
 }

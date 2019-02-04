@@ -14,6 +14,7 @@ import org.andork.unit.Length;
 import org.andork.unit.Unit;
 import org.andork.unit.UnitizedDouble;
 import org.andork.unit.UnitizedNumber;
+import org.andork.walls.WallsMessage;
 
 public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegment, Cloneable {
 	public Segment sourceSegment;
@@ -54,7 +55,7 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 		return result;
 	}
 
-	static boolean isVertical(UnitizedDouble<Angle> angle) {
+	public static boolean isVertical(UnitizedDouble<Angle> angle) {
 		return angle != null && Math.abs(angle.abs().doubleValue(Angle.degrees) - 90.0) < 1e-6;
 	}
 
@@ -95,8 +96,12 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 		frontsightInclination = Angle.atan2(up, ne).in(units.getVUnit()).sub(units.getIncv());
 		return true;
 	}
-
+	
 	public boolean applyHeightCorrections() throws SegmentParseException {
+		return this.applyHeightCorrections(null);
+	}
+
+	public boolean applyHeightCorrections(WallsVisitor visitor) throws SegmentParseException {
 		if (isVertical() || (units.getInch().isZero() && 
 				(!isFinite(instrumentHeight) || instrumentHeight.isZero()) && 
 				(!isFinite(targetHeight) || targetHeight.isZero()))) {
@@ -134,9 +139,13 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 			UnitizedDouble<Length> heightOffset = instrumentHeight.sub(targetHeight);
 
 			if (heightOffset.abs().compareTo(tapeDist.mul(1 + 1e-6)) > 0) {
-				throw new SegmentParseException(
-						"instrument and target height difference is greater than tape distance; this is impossible",
-						sourceSegment);
+				tapeDist = heightOffset.abs();
+				if (visitor != null) {
+					visitor.message(new WallsMessage(
+						"error",
+						"Change in depth greater than taped distance! Distance assumed to be " + heightOffset.abs() + " (not " + tapeDist + ") to match change",
+						sourceSegment));
+				}
 			}
 
 			if (heightOffset.abs().sub(tapeDist).abs().compareTo(tapeDist.mul(1e-8)) < 0) {
@@ -244,5 +253,13 @@ public class Vector implements HasVarianceOverrides, HasComment, HasInlineSegmen
 	@Override
 	public void setSegment(List<String> segment) {
 		this.segment = segment;
+	}
+
+	public boolean hasAzimuth() {
+		return frontsightAzimuth != null || backsightAzimuth != null;
+	}
+	
+	public boolean isSplay() {
+		return (from == null) != (to == null);
 	}
 }

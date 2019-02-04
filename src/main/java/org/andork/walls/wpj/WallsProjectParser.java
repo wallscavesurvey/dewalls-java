@@ -1,6 +1,7 @@
 package org.andork.walls.wpj;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -115,7 +116,7 @@ public class WallsProjectParser extends LineParser {
 	void pathLine() throws SegmentParseExpectedException {
 		expectIgnoreCase(".PATH");
 		whitespace();
-		currentEntry.path = Paths.get(remaining().toString());
+		currentEntry.path = Paths.get(remaining().toString().replaceAll("\\\\", File.separator));
 	}
 
 	void surveyLine() throws SegmentParseExpectedException {

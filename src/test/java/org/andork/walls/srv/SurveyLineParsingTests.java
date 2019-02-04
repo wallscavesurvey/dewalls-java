@@ -361,6 +361,61 @@ public class SurveyLineParsingTests {
 		Assert.assertEquals(1, messages.size());
 		Assert.assertTrue(messages.get(0).message.contains("exceeds"));
 	}
+	
+	@Test
+	public void testShittyUnitsSyntax() throws SegmentParseException {
+		messages.clear();
+		parser.parseLine("#units typevb=c, feet, order=vad,");
+		Assert.assertEquals(Length.feet, parser.units.getDUnit());
+		Assert.assertEquals(Arrays.asList(CtMeasurement.INCLINATION, CtMeasurement.AZIMUTH, CtMeasurement.DISTANCE), parser.units.getCtOrder());
+		Assert.assertEquals(true, parser.units.isTypevbCorrected());
+		Assert.assertEquals(0, messages.size());
+	}
+	
+	@Test
+	public void testShittyCtLineSyntax() throws SegmentParseException {
+		messages.clear();
+		parser.parseLine("#units m order=dav");
+		parser.parseLine("A , B 1 , 2,  3, *2 3 4, 5*,");
+		Assert.assertEquals("A", vector.from);
+		Assert.assertEquals("B", vector.to);
+		Assert.assertEquals(Length.meters(1), vector.distance);
+		Assert.assertEquals(Angle.degrees(2), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(3), vector.frontsightInclination);
+		Assert.assertEquals(Length.meters(2), vector.left);
+		Assert.assertEquals(Length.meters(3), vector.right);
+		Assert.assertEquals(Length.meters(4), vector.up);
+		Assert.assertEquals(Length.meters(5), vector.down);
+	}
+	
+	@Test
+	public void testShittyLRUDOnlySyntaxes() throws SegmentParseException {
+		messages.clear();
+		parser.parseLine("#units m order=dav");
+		parser.parseLine("A A <3,4,5,6>");
+		Assert.assertEquals("A", vector.from);
+		Assert.assertNull(vector.to);
+		Assert.assertNull(vector.distance);
+		Assert.assertNull(vector.frontsightAzimuth);
+		Assert.assertNull(vector.frontsightInclination);
+		Assert.assertEquals(Length.meters(3), vector.left);
+		Assert.assertEquals(Length.meters(4), vector.right);
+		Assert.assertEquals(Length.meters(5), vector.up);
+		Assert.assertEquals(Length.meters(6), vector.down);
+		
+		messages.clear();
+		parser.parseLine("#units m order=dav");
+		parser.parseLine("A - <3,4,5,6>");
+		Assert.assertEquals("A", vector.from);
+		Assert.assertNull(vector.to);
+		Assert.assertNull(vector.distance);
+		Assert.assertNull(vector.frontsightAzimuth);
+		Assert.assertNull(vector.frontsightInclination);
+		Assert.assertEquals(Length.meters(3), vector.left);
+		Assert.assertEquals(Length.meters(4), vector.right);
+		Assert.assertEquals(Length.meters(5), vector.up);
+		Assert.assertEquals(Length.meters(6), vector.down);
+	}
 
 	@Test
 	public void basicRectangularVectorTest() throws SegmentParseException {
@@ -418,6 +473,17 @@ public class SurveyLineParsingTests {
 		Assert.assertEquals(Length.meters(6), vector.right);
 		Assert.assertEquals(Length.meters(7), vector.up);
 		Assert.assertEquals(Length.meters(8), vector.down);
+	}
+	
+	@Test
+	public void testNoteSegmentAmbiguity() throws SegmentParseException {
+		parser.parseLine("#FIX STANA:ostgps1 	736149	1988944	1385	/Osto de Cerro Voludo #1 #SEG foo");
+		Assert.assertEquals("STANA:ostgps1", fixedStation.name);
+		Assert.assertEquals(Length.meters(1988944), fixedStation.north);
+		Assert.assertEquals(Length.meters(736149), fixedStation.east);
+		Assert.assertEquals(Length.meters(1385), fixedStation.elevation);
+		Assert.assertEquals("Osto de Cerro Voludo #1", fixedStation.note);
+		Assert.assertEquals(Arrays.asList("foo"), fixedStation.segment);
 	}
 
 	@Test
@@ -734,6 +800,16 @@ public class SurveyLineParsingTests {
 		Assert.assertTrue(vector.cFlag);
 
 		parser.parseLine("A <1 2 3 4 <5,6,7,8>");
+		Assert.assertEquals("<1", vector.to);
+		Assert.assertEquals(Length.meters(2), vector.distance);
+		Assert.assertEquals(Angle.degrees(3), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(4), vector.frontsightInclination);
+		Assert.assertEquals(Length.meters(5), vector.left);
+		Assert.assertEquals(Length.meters(6), vector.right);
+		Assert.assertEquals(Length.meters(7), vector.up);
+		Assert.assertEquals(Length.meters(8), vector.down);
+
+		parser.parseLine("A <1 ,2,3,4,<5,6,7,8>");
 		Assert.assertEquals("<1", vector.to);
 		Assert.assertEquals(Length.meters(2), vector.distance);
 		Assert.assertEquals(Angle.degrees(3), vector.frontsightAzimuth);

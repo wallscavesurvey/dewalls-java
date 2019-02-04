@@ -268,6 +268,11 @@ public class LineParser {
 		addExpected(finalEx);
 		throwAllExpected();
 	}
+	
+	public void clearExpected() {
+		expectedItems.clear();
+		expectedIndex = 0;
+	}
 
 	public Segment expect(char c) throws SegmentParseExpectedException {
 		if (index < line.length()) {
@@ -337,10 +342,20 @@ public class LineParser {
 		return expect(whitespaceRx, "<WHITESPACE>");
 	}
 
+	protected static final Pattern whitespaceAndOrCommaRx = Pattern.compile("\\s*,\\s*|\\s+");
+
+	public Segment whitespaceAndOrComma() throws SegmentParseExpectedException {
+		return expect(whitespaceAndOrCommaRx, "<WHITESPACE/,>");
+	}
+
 	protected static final Pattern nonwhitespaceRx = Pattern.compile("\\S+");
 
 	public Optional<Segment> maybeWhitespace() throws SegmentParseException {
 		return maybe(this::whitespace);
+	}
+
+	public Optional<Segment> maybeWhitespaceAndOrComma() throws SegmentParseException {
+		return maybe(this::whitespaceAndOrComma);
 	}
 
 	public Segment nonwhitespace() throws SegmentParseExpectedException {
