@@ -132,7 +132,9 @@ public class WallsProjectParser extends LineParser {
 	void statusLine() throws NumberFormatException, SegmentParseExpectedException {
 		expectIgnoreCase(".STATUS");
 		whitespace();
+		int startIndex = index;
 		currentEntry.status = unsignedIntLiteral();
+		currentEntry.statusSegment = line.substring(startIndex, index);
 	}
 
 	void optionsLine() throws SegmentParseExpectedException {

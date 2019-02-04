@@ -4,6 +4,7 @@
   <artifactId>dewalls</artifactId>
   <name>Dewalls</name>
   <description>Walls Cave Survey Data Parser</description>
+  <version>2.3.0</version>
   <dependencies>
   	<dependency>
   		<groupId>org.andork</groupId>
@@ -44,5 +45,4 @@
       </plugin>
     </plugins>
   </build>
-  <version>2.1.1</version>
 </project>

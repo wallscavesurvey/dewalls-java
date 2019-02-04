@@ -2,7 +2,6 @@ package org.andork.walls.wpj;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +15,7 @@ public class WallsProjectEntry {
 	Segment name;
 	Path path;
 	int status;
+	Segment statusSegment;
 	Segment options;
 	GeoReference reference;
 
@@ -59,6 +59,7 @@ public class WallsProjectEntry {
 	//   100: East
 	//   101: West
 
+	public static final int DetachedBit = 1 << 1;
 	public static final int NameDefinesSegmentBit = 1 << 3;
 	public static final int FeetBit = 1 << 4;
 	public static final int ReferenceUnspecifiedBit = 1 << 6;
@@ -92,6 +93,11 @@ public class WallsProjectEntry {
 
 	public boolean isSurvey() {
 		return !isOther();
+	}
+
+	public boolean isDetatched() {
+		if (parent == null) return false;
+		return (status & DetachedBit) != 0;
 	}
 
 	public boolean nameDefinesSegment() {
@@ -233,6 +239,29 @@ public class WallsProjectEntry {
 			options.add(this.options);
 		}
 		return options;
+	}
+	
+	public String title() {
+		return title;
+	}
+	
+	public List<String> titlePath() {
+		List<String> result;
+		if (parent != null) {
+			result = parent.titlePath();
+		} else {
+			result = new ArrayList<>();
+		}
+		result.add(title);
+		return result;		
+	}
+	
+	public Segment name() {
+		return name;
+	}
+	
+	public Segment statusSegment() {
+		return statusSegment;
 	}
 
 	public List<String> segment() {
