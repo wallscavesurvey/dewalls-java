@@ -27,22 +27,33 @@ public class WallsStationReportParser {
 		return report;
 	}
 
+	private static final Pattern crsLineRx = Pattern.compile(
+			"^\\s*UTM\\s+(\\d+)([NS])\\s+Grid Conv:\\s*([0-9.]+)\\s+Datum:\\s*(.+)\\s*$", Pattern.CASE_INSENSITIVE);
 	private static final Pattern stationPositionLineRx = Pattern.compile(
 			"^([^\t]*)\t([^\t]+)\t([-+]?\\d+(\\.\\d*)?|\\.\\d+)\t([-+]?\\d+(\\.\\d*)?|\\.\\d+)\t([-+]?\\d+(\\.\\d*)?|\\.\\d+)(\t(.*))?");
 
 	public void parseLine(Segment line) {
 		SegmentMatcher matcher = new SegmentMatcher(line, stationPositionLineRx);
-		if (!matcher.find()) {
+		if (matcher.find()) {
+			StationPosition station = new StationPosition();
+			station.prefix = matcher.group(1);
+			station.name = matcher.group(2);
+			station.east = Double.parseDouble(matcher.group(3).toString());
+			station.north = Double.parseDouble(matcher.group(5).toString());
+			station.up = Double.parseDouble(matcher.group(7).toString());
+			station.note = matcher.group(10);
+			report.stationPositions.add(station);
 			return;
 		}
-		StationPosition station = new StationPosition();
-		station.prefix = matcher.group(1);
-		station.name = matcher.group(2);
-		station.east = Double.parseDouble(matcher.group(3).toString());
-		station.north = Double.parseDouble(matcher.group(5).toString());
-		station.up = Double.parseDouble(matcher.group(7).toString());
-		station.note = matcher.group(10);
-		report.stationPositions.add(station);
+		matcher = new SegmentMatcher(line, crsLineRx);
+		if (matcher.find()) {
+			report.utmZone = Integer.valueOf(matcher.group(1).toString());
+			report.utmSouth = "s".equalsIgnoreCase(matcher.group(2).toString());
+			report.datum = matcher.group(4).toString();
+			if (report.datum.toUpperCase().matches("WGS\\s*(19)?84")) {
+				report.datum = "WGS84";
+			}
+		}
 	}
 	
 	public void parse(InputStream in, Object source) throws IOException {
