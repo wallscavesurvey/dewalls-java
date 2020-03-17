@@ -53,30 +53,25 @@ public class WallsSurveyParser extends LineParser {
 	Vector vector;
 	FixedStation fixStation;
 
-	Character escapedChar(Predicate<Character> charPredicate, String... expectedItems)
-			throws SegmentParseException {
+	Character escapedChar(Predicate<Character> charPredicate, String... expectedItems) throws SegmentParseException {
 		Character c = expectChar(charPredicate, expectedItems);
 		return c == '\\' ? oneOf(escapedChars) : c;
 	}
 
-	String escapedText(Predicate<Character> charPredicate, String... expectedItems)
-			throws SegmentParseException {
+	String escapedText(Predicate<Character> charPredicate, String... expectedItems) throws SegmentParseException {
 		StringBuilder result = new StringBuilder();
 		while (maybe(() -> result.append(escapedChar(charPredicate, expectedItems))).isPresent()) {
 		}
 		return result.toString();
 	}
-	
-	String escapedTextUntil(Pattern endPattern, String... expectedItems)
-			throws SegmentParseException {
+
+	String escapedTextUntil(Pattern endPattern, String... expectedItems) throws SegmentParseException {
 		Matcher m = endPattern.matcher(line);
 		m.region(index, line.length());
 		int endIndex = m.find() ? m.start() : line.length();
 		StringBuilder result = new StringBuilder();
 		while (index < endIndex) {
-			result.append('\\' == line.charAt(index)
-				? oneOf(escapedChars)
-				: line.charAt(index));
+			result.append('\\' == line.charAt(index) ? oneOf(escapedChars) : line.charAt(index));
 			index++;
 		}
 		return result.toString();
@@ -85,7 +80,8 @@ public class WallsSurveyParser extends LineParser {
 	<R> Optional<R> optional(Production<R> production) throws SegmentParseException {
 		try {
 			return Optional.of(production.run());
-		} catch (SegmentParseExpectedException ex) {
+		}
+		catch (SegmentParseExpectedException ex) {
 			if (maybe(() -> expect(optionalRx, "-", "--")).isPresent()) {
 				return Optional.empty();
 			}
@@ -97,7 +93,8 @@ public class WallsSurveyParser extends LineParser {
 		int start = index;
 		try {
 			return Optional.of(production.run());
-		} catch (SegmentParseExpectedException ex) {
+		}
+		catch (SegmentParseExpectedException ex) {
 			index = start;
 			if (maybe(() -> expect(optionalRx, "-", "--")).isPresent()) {
 				return Optional.empty();
@@ -118,7 +115,8 @@ public class WallsSurveyParser extends LineParser {
 					break;
 				}
 				element = optional.get();
-			} else {
+			}
+			else {
 				element = oneOf(elements);
 			}
 			result.add(element);
@@ -280,8 +278,8 @@ public class WallsSurveyParser extends LineParser {
 
 	static Map<String, List<TapingMethodMeasurement>> createTapingMethods() {
 		Map<String, List<TapingMethodMeasurement>> result = new HashMap<>();
-		result.put("it",
-				Arrays.asList(TapingMethodMeasurement.INSTRUMENT_HEIGHT, TapingMethodMeasurement.TARGET_HEIGHT));
+		result
+			.put("it", Arrays.asList(TapingMethodMeasurement.INSTRUMENT_HEIGHT, TapingMethodMeasurement.TARGET_HEIGHT));
 		result.put("is", Arrays.asList(TapingMethodMeasurement.INSTRUMENT_HEIGHT, TapingMethodMeasurement.STATION));
 		result.put("st", Arrays.asList(TapingMethodMeasurement.STATION, TapingMethodMeasurement.TARGET_HEIGHT));
 		result.put("ss", Arrays.asList(TapingMethodMeasurement.STATION, TapingMethodMeasurement.STATION));
@@ -382,13 +380,14 @@ public class WallsSurveyParser extends LineParser {
 	static final Map<Character, CardinalDirection> northSouth = createNorthSouth();
 	static final Map<Character, CardinalDirection> eastWest = createEastWest();
 	static final Map<Character, CtMeasurement> ctElements = createCtElements();
-	static final Set<CtMeasurement> requiredCtElements = new HashSet<>(
-			Arrays.asList(CtMeasurement.DISTANCE, CtMeasurement.AZIMUTH));
+	static final Set<CtMeasurement> requiredCtElements =
+		new HashSet<>(Arrays.asList(CtMeasurement.DISTANCE, CtMeasurement.AZIMUTH));
 	static final Map<Character, RectMeasurement> rectElements = createRectElements();
-	static final Set<RectMeasurement> requiredRectElements = new HashSet<>(
-			Arrays.asList(RectMeasurement.EAST, RectMeasurement.NORTH));
+	static final Set<RectMeasurement> requiredRectElements =
+		new HashSet<>(Arrays.asList(RectMeasurement.EAST, RectMeasurement.NORTH));
 	static final Map<Character, LrudMeasurement> lrudElements = createLrudElements();
-	static final Set<LrudMeasurement> requiredLrudElements = new HashSet<>(
+	static final Set<LrudMeasurement> requiredLrudElements =
+		new HashSet<>(
 			Arrays.asList(LrudMeasurement.LEFT, LrudMeasurement.RIGHT, LrudMeasurement.UP, LrudMeasurement.DOWN));
 	static final Map<String, Boolean> correctedValues = createCorrectedValues();
 	static final Map<String, CaseType> caseTypes = createCaseTypes();
@@ -396,8 +395,7 @@ public class WallsSurveyParser extends LineParser {
 	public static final Map<String, List<TapingMethodMeasurement>> tapingMethods = createTapingMethods();
 	static final Map<String, Integer> prefixDirectives = createPrefixDirectives();
 
-	static final Set<Character> escapedChars = new HashSet<>(Arrays.asList(
-			'r', 'n', 'f', 't', '"', '\\'));
+	static final Set<Character> escapedChars = new HashSet<>(Arrays.asList('r', 'n', 'f', 't', '"', '\\'));
 	static final Pattern wordRx = Pattern.compile("\\w+");
 	static final Pattern notSemicolonRx = Pattern.compile("[^;]+");
 	static final Pattern UnitsOptionRx = Pattern.compile("[a-zA-Z_0-9/]*");
@@ -435,7 +433,8 @@ public class WallsSurveyParser extends LineParser {
 	public void setVisitor(WallsVisitor visitor) {
 		if (visitor == null) {
 			this.visitor = new AbstractWallsVisitor();
-		} else {
+		}
+		else {
 			this.visitor = visitor;
 		}
 	}
@@ -457,9 +456,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	UnitizedDouble<Length> unsignedLength(Unit<Length> defaultUnit) throws SegmentParseException {
-		return oneOf(
-				() -> unsignedLengthNonInches(defaultUnit),
-				() -> unsignedLengthInches());
+		return oneOf(() -> unsignedLengthNonInches(defaultUnit), () -> unsignedLengthInches());
 	}
 
 	UnitizedDouble<Length> length(Unit<Length> defaultUnit) throws SegmentParseException {
@@ -473,7 +470,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	UnitizedDouble<Angle> unsignedAngle(Map<Character, Unit<Angle>> unitSuffixes, Unit<Angle> defaultUnit)
-			throws SegmentParseException {
+		throws SegmentParseException {
 		Optional<Double> value = maybe(this::unsignedDoubleLiteral);
 		if (maybe(this::expectColon).isPresent()) {
 			Optional<Double> minutes = maybe(this::unsignedDoubleLiteral);
@@ -486,11 +483,13 @@ public class WallsSurveyParser extends LineParser {
 			}
 
 			return new UnitizedDouble<Angle>(
-					value.orElse(0.0) + minutes.orElse(0.0) / 60.0 + seconds.orElse(0.0) / 3600, Angle.degrees);
-		} else if (!value.isPresent()) {
+				value.orElse(0.0) + minutes.orElse(0.0) / 60.0 + seconds.orElse(0.0) / 3600,
+				Angle.degrees);
+		}
+		else if (!value.isPresent()) {
 			throwAllExpected();
 		}
-		Unit<Angle> unit = unitSuffixes == null ? defaultUnit : oneOf(unitSuffixes, defaultUnit); 
+		Unit<Angle> unit = unitSuffixes == null ? defaultUnit : oneOf(unitSuffixes, defaultUnit);
 		return new UnitizedDouble<Angle>(value.get(), unit);
 	}
 
@@ -506,7 +505,8 @@ public class WallsSurveyParser extends LineParser {
 			throwAllExpected();
 		}
 		return new UnitizedDouble<Angle>(
-				degrees.orElse(0.0) + minutes.orElse(0.0) / 60.0 + seconds.orElse(0.0) / 3600, Angle.degrees);
+			degrees.orElse(0.0) + minutes.orElse(0.0) / 60.0 + seconds.orElse(0.0) / 3600,
+			Angle.degrees);
 	}
 
 	UnitizedDouble<Angle> latitude() throws SegmentParseException {
@@ -542,9 +542,12 @@ public class WallsSurveyParser extends LineParser {
 			throw new SegmentParseException("azimuth out of range", line.substring(start, index));
 		}
 		if (result.get(Angle.degrees) == 360.0) {
-			visitor.message(new WallsMessage("warning",
-				"why do you have an azimuth of 360 degrees instead of 0?",
-				line.substring(start, index)));
+			visitor
+				.message(
+					new WallsMessage(
+						"warning",
+						"why do you have an azimuth of 360 degrees instead of 0?",
+						line.substring(start, index)));
 		}
 
 		return result;
@@ -560,14 +563,16 @@ public class WallsSurveyParser extends LineParser {
 				throw new SegmentParseException("azimuth out of range", line.substring(start, index));
 			}
 			if (angle.get().get(Angle.degrees) == 90.0) {
-				visitor.message(new WallsMessage("warning",
-					"why are you using 90 degrees in a quadrant azimuth?",
-					line.substring(start, index)));
+				visitor
+					.message(
+						new WallsMessage(
+							"warning",
+							"why are you using 90 degrees in a quadrant azimuth?",
+							line.substring(start, index)));
 			}
 
-			CardinalDirection to = oneOf(
-					from == CardinalDirection.NORTH ||
-							from == CardinalDirection.SOUTH ? eastWest : northSouth);
+			CardinalDirection to =
+				oneOf(from == CardinalDirection.NORTH || from == CardinalDirection.SOUTH ? eastWest : northSouth);
 
 			return from.quadrant(to, angle.get());
 		}
@@ -575,9 +580,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	UnitizedDouble<Angle> azimuth(Unit<Angle> defaultUnit) throws SegmentParseException {
-		return oneOf(
-				() -> quadrantAzimuth(),
-				() -> nonQuadrantAzimuth(defaultUnit));
+		return oneOf(() -> quadrantAzimuth(), () -> nonQuadrantAzimuth(defaultUnit));
 	}
 
 	UnitizedDouble<Angle> azimuthOffset(Unit<Angle> defaultUnit) throws SegmentParseException {
@@ -603,9 +606,12 @@ public class WallsSurveyParser extends LineParser {
 
 		if (signum.isPresent()) {
 			if (angle.get(angle.unit) == 0.0) {
-				visitor.message(new WallsMessage("warning",
-					"why do you have an inclination of -0 instead of just 0?",
-					line.substring(start, index)));
+				visitor
+					.message(
+						new WallsMessage(
+							"warning",
+							"why do you have an inclination of -0 instead of just 0?",
+							line.substring(start, index)));
 			}
 			return angle.mul(signum.get());
 		}
@@ -614,11 +620,11 @@ public class WallsSurveyParser extends LineParser {
 
 	VarianceOverride varianceOverride(Unit<Length> defaultUnit) throws SegmentParseException {
 		return oneOf(
-				() -> floatedVectorVarianceOverride(),
-				() -> floatedTraverseVarianceOverride(),
-				() -> lengthVarianceOverride(defaultUnit),
-				() -> rmsErrorVarianceOverride(defaultUnit),
-				() -> null);
+			() -> floatedVectorVarianceOverride(),
+			() -> floatedTraverseVarianceOverride(),
+			() -> lengthVarianceOverride(defaultUnit),
+			() -> rmsErrorVarianceOverride(defaultUnit),
+			() -> null);
 	}
 
 	VarianceOverride floatedVectorVarianceOverride() throws SegmentParseException {
@@ -641,9 +647,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	String quotedTextOrNonwhitespace() throws SegmentParseException {
-		return oneOf(
-				() -> quotedText(),
-				() -> nonwhitespace().toString());
+		return oneOf(() -> quotedText(), () -> nonwhitespace().toString());
 	}
 
 	String quotedText() throws SegmentParseException {
@@ -661,7 +665,8 @@ public class WallsSurveyParser extends LineParser {
 				if (index < line.length()) {
 					index++;
 				}
-			} else if (c == '"') {
+			}
+			else if (c == '"') {
 				break;
 			}
 		}
@@ -713,14 +718,10 @@ public class WallsSurveyParser extends LineParser {
 		}
 
 		if (inBlockComment) {
-			throwAllExpected(() -> oneOfWithLookahead(
-					this::endBlockCommentLine,
-					this::insideBlockCommentLine));
-		} else {
-			throwAllExpected(() -> oneOf(
-					this::comment,
-					this::directiveLine,
-					this::vectorLine));
+			throwAllExpected(() -> oneOfWithLookahead(this::endBlockCommentLine, this::insideBlockCommentLine));
+		}
+		else {
+			throwAllExpected(() -> oneOf(this::comment, this::directiveLine, this::vectorLine));
 		}
 	}
 
@@ -747,7 +748,8 @@ public class WallsSurveyParser extends LineParser {
 					throw new SegmentParseException("macro not defined", macroName);
 				}
 				return macros.get(macroName.toString());
-			} else if (Character.isWhitespace(c)) {
+			}
+			else if (Character.isWhitespace(c)) {
 				throw new SegmentParseExpectedException(line.charAtAsSegment(index - 1), "<NONWHITESPACE>");
 			}
 		}
@@ -815,15 +817,11 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	void segmentSeparator() throws SegmentParseException {
-		oneOf(
-				() -> expect("/"),
-				() -> expect("\\"));
+		oneOf(() -> expect("/"), () -> expect("\\"));
 	}
 
 	String initialSegmentPart() throws SegmentParseException {
-		return oneOf(
-				() -> expect("."),
-				() -> expect("..")).toString();
+		return oneOf(() -> expect("."), () -> expect("..")).toString();
 	}
 
 	String nonInitialSegmentPart() throws SegmentParseException {
@@ -833,20 +831,18 @@ public class WallsSurveyParser extends LineParser {
 	List<String> segmentPath() throws SegmentParseException {
 		final List<String> path = new ArrayList<>();
 
-		oneOf(
-				() -> {
-					segmentSeparator();
-					path.addAll(rootSegment);
-				},
-				() -> {
-					path.addAll(segment);
-					while (maybe(() -> {
-						if (initialSegmentPart().equals("..") && !path.isEmpty()) {
-							path.remove(path.size() - 1);
-						}
-					}).isPresent())
-						;
-				});
+		oneOf(() -> {
+			segmentSeparator();
+			path.addAll(rootSegment);
+		}, () -> {
+			path.addAll(segment);
+			while (maybe(() -> {
+				if (initialSegmentPart().equals("..") && !path.isEmpty()) {
+					path.remove(path.size() - 1);
+				}
+			}).isPresent())
+				;
+		});
 
 		while (maybe(() -> path.add(nonInitialSegmentPart())).isPresent())
 			;
@@ -860,10 +856,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	List<String> segmentDirective() throws SegmentParseException {
-		oneOf(
-				() -> expectIgnoreCase("#segment"),
-				() -> expectIgnoreCase("#seg"),
-				() -> expectIgnoreCase("#s"));
+		oneOf(() -> expectIgnoreCase("#segment"), () -> expectIgnoreCase("#seg"), () -> expectIgnoreCase("#s"));
 
 		List<String> result = segment;
 
@@ -897,9 +890,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	void noteDirective() throws SegmentParseException {
-		oneOf(
-				() -> expectIgnoreCase("#note"),
-				() -> expectIgnoreCase("#n"));
+		oneOf(() -> expectIgnoreCase("#note"), () -> expectIgnoreCase("#n"));
 
 		whitespace();
 		String _station = station().toString();
@@ -917,9 +908,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	void flagDirective() throws SegmentParseException {
-		oneOf(
-				() -> expectIgnoreCase("#flag"),
-				() -> expectIgnoreCase("#f"));
+		oneOf(() -> expectIgnoreCase("#flag"), () -> expectIgnoreCase("#f"));
 
 		List<String> stations = new ArrayList<>();
 
@@ -937,7 +926,8 @@ public class WallsSurveyParser extends LineParser {
 
 		if (stations.isEmpty()) {
 			units.setFlag(_flag.orElse(null));
-		} else {
+		}
+		else {
 			if (!_flag.isPresent()) {
 				throwAllExpected();
 			}
@@ -955,9 +945,7 @@ public class WallsSurveyParser extends LineParser {
 	void symbolLine() throws SegmentParseException {
 		maybeWhitespace();
 
-		oneOf(
-				() -> expectIgnoreCase("#symbol"),
-				() -> expectIgnoreCase("#sym"));
+		oneOf(() -> expectIgnoreCase("#symbol"), () -> expectIgnoreCase("#sym"));
 
 		// ignore the rest for now
 		remaining();
@@ -973,12 +961,9 @@ public class WallsSurveyParser extends LineParser {
 	Date dateDirective() throws SegmentParseException {
 		expectIgnoreCase("#date");
 		whitespace();
-		return oneOf(
-				() -> usDate1(),
-				() -> usDate2(),
-				() -> usDate3());
+		return oneOf(() -> usDate1(), () -> usDate2(), () -> usDate3());
 	}
-	
+
 	void emptyDirectiveLine() throws SegmentParseException {
 		maybeWhitespace();
 	}
@@ -993,7 +978,8 @@ public class WallsSurveyParser extends LineParser {
 		String str = expect(usDateRx1, "<DATE>").toString();
 		try {
 			return (str.length() > 8 ? fullDateFormat1 : shortDateFormat1).parse(str);
-		} catch (ParseException ex) {
+		}
+		catch (ParseException ex) {
 			// should never happen because of regex
 			return null;
 		}
@@ -1003,7 +989,8 @@ public class WallsSurveyParser extends LineParser {
 		String str = expect(usDateRx2, "<DATE>").toString();
 		try {
 			return (str.length() > 8 ? fullDateFormat2 : shortDateFormat2).parse(str);
-		} catch (ParseException ex) {
+		}
+		catch (ParseException ex) {
 			// should never happen because of regex
 			return null;
 		}
@@ -1013,7 +1000,8 @@ public class WallsSurveyParser extends LineParser {
 		String str = expect(usDateRx3, "<DATE>").toString();
 		try {
 			return fullDateFormat3.parse(str);
-		} catch (ParseException ex) {
+		}
+		catch (ParseException ex) {
 			// should never happen because of regex
 			return null;
 		}
@@ -1021,9 +1009,7 @@ public class WallsSurveyParser extends LineParser {
 
 	void UnitsLine() throws SegmentParseException {
 		maybeWhitespace();
-		oneOf(
-				() -> expectIgnoreCase("#units"),
-				() -> expectIgnoreCase("#u"));
+		oneOf(() -> expectIgnoreCase("#units"), () -> expectIgnoreCase("#u"));
 
 		visitor.willParseUnits();
 
@@ -1036,7 +1022,7 @@ public class WallsSurveyParser extends LineParser {
 	void parseUnitsOptions(Segment options) throws SegmentParseException {
 		reset(options);
 		UnitsOptions();
-		//		visitor.parsedUnits();
+		// visitor.parsedUnits();
 	}
 
 	void UnitsOptions() throws SegmentParseException {
@@ -1044,13 +1030,12 @@ public class WallsSurveyParser extends LineParser {
 		while (!maybe(() -> inlineCommentOrEndOfLine()).isPresent()) {
 			if (gotOne) {
 				whitespaceAndOrComma();
-			} else {
+			}
+			else {
 				gotOne = true;
 			}
 
-			maybe(() -> oneOf(
-					this::UnitsOption,
-					this::macroOption));
+			maybe(() -> oneOf(this::UnitsOption, this::macroOption));
 		}
 	}
 
@@ -1147,9 +1132,7 @@ public class WallsSurveyParser extends LineParser {
 
 	void order() throws SegmentParseException {
 		expect('=');
-		oneOf(
-				this::ctOrder,
-				this::rectOrder);
+		oneOf(this::ctOrder, this::rectOrder);
 	}
 
 	void ctOrder() throws SegmentParseException {
@@ -1173,7 +1156,8 @@ public class WallsSurveyParser extends LineParser {
 	void rect() throws SegmentParseException {
 		if (maybeChar('=')) {
 			units.setRect(azimuthOffset(units.getAUnit()));
-		} else {
+		}
+		else {
 			units.setVectorType(VectorType.RECTANGULAR);
 		}
 	}
@@ -1185,7 +1169,7 @@ public class WallsSurveyParser extends LineParser {
 
 	void inch() throws SegmentParseException {
 		expect('=');
-		units.setInch(length(units.getSUnit()));
+		units.setInch(length(units.getDUnit()));
 	}
 
 	void incs() throws SegmentParseException {
@@ -1218,14 +1202,17 @@ public class WallsSurveyParser extends LineParser {
 		units.setTypeabCorrected(oneOfLowercase(wordRx, correctedValues));
 		if (maybeChar(',')) {
 			Optional<Double> tolerance = maybe(this::unsignedDoubleLiteral);
-			if (!tolerance.isPresent()) return;
+			if (!tolerance.isPresent())
+				return;
 			units.setTypeabTolerance(new UnitizedDouble<Angle>(tolerance.get(), Angle.degrees));
 			if (maybe(() -> expectIgnoreCase(",x")).isPresent()) {
 				units.setTypeabNoAverage(true);
-			} else {
+			}
+			else {
 				units.setTypeabNoAverage(false);
 			}
-		} else {
+		}
+		else {
 			units.setTypeabTolerance(new UnitizedDouble<Angle>(2.0, Angle.degrees));
 		}
 	}
@@ -1235,14 +1222,17 @@ public class WallsSurveyParser extends LineParser {
 		units.setTypevbCorrected(oneOfLowercase(wordRx, correctedValues));
 		if (maybeChar(',')) {
 			Optional<Double> tolerance = maybe(this::unsignedDoubleLiteral);
-			if (!tolerance.isPresent()) return;
+			if (!tolerance.isPresent())
+				return;
 			units.setTypevbTolerance(new UnitizedDouble<Angle>(tolerance.get(), Angle.degrees));
 			if (maybe(() -> expectIgnoreCase(",x")).isPresent()) {
 				units.setTypevbNoAverage(true);
-			} else {
+			}
+			else {
 				units.setTypevbNoAverage(false);
 			}
-		} else {
+		}
+		else {
 			units.setTypevbTolerance(new UnitizedDouble<Angle>(2.0, Angle.degrees));
 		}
 	}
@@ -1257,9 +1247,12 @@ public class WallsSurveyParser extends LineParser {
 		units.setLrud(oneOfLowercase(wordRx, lrudTypes));
 		if (maybeChar(':')) {
 			lrudOrder();
-		} else {
-			units.setLrudOrder(Arrays.asList(LrudMeasurement.LEFT, LrudMeasurement.RIGHT, LrudMeasurement.UP,
-					LrudMeasurement.DOWN));
+		}
+		else {
+			units
+				.setLrudOrder(
+					Arrays
+						.asList(LrudMeasurement.LEFT, LrudMeasurement.RIGHT, LrudMeasurement.UP, LrudMeasurement.DOWN));
 		}
 	}
 
@@ -1373,24 +1366,24 @@ public class WallsSurveyParser extends LineParser {
 		}
 		vector.to = to;
 	}
-	
+
 	boolean isAzimuthOptional() {
-		return vector.distance != null &&
-			Vector.isVertical(units.averageInclination(
-				vector.frontsightInclination,
-				vector.backsightInclination
-			));
+		return vector.distance != null
+			&& Vector.isVertical(units.averageInclination(vector.frontsightInclination, vector.backsightInclination));
 	}
-	
+
 	boolean isInclinationOptional() {
 		return vector.distance != null && vector.hasAzimuth() && vector.isSplay();
 	}
-	
+
 	boolean isCtMeasurementOptional(CtMeasurement elem) {
 		switch (elem) {
-		case AZIMUTH: return isAzimuthOptional();
-		case INCLINATION: return isInclinationOptional();
-		default: return false;
+		case AZIMUTH:
+			return isAzimuthOptional();
+		case INCLINATION:
+			return isInclinationOptional();
+		default:
+			return false;
 		}
 	}
 
@@ -1400,7 +1393,7 @@ public class WallsSurveyParser extends LineParser {
 			afterVectorMeasurements();
 			return;
 		}
-		
+
 		if (vector.isSplay()) {
 			if (maybeWithLookahead(() -> afterVectorMeasurements()).isPresent()) {
 				return;
@@ -1417,7 +1410,8 @@ public class WallsSurveyParser extends LineParser {
 				}
 				rectMeasurement(elem);
 			}
-		} else {
+		}
+		else {
 			for (CtMeasurement elem : units.getCtOrder()) {
 				if (isCtMeasurementOptional(elem)) {
 					maybeWithLookahead(() -> {
@@ -1434,10 +1428,10 @@ public class WallsSurveyParser extends LineParser {
 		}
 
 		if (units.getVectorType() == VectorType.COMPASS_AND_TAPE) {
-			if (!UnitizedDouble.isFinite(vector.frontsightAzimuth) &&
-					!UnitizedDouble.isFinite(vector.backsightAzimuth) &&
-					!Vector.isVertical(
-							units.averageInclination(vector.frontsightInclination, vector.backsightInclination))) {
+			if (!UnitizedDouble.isFinite(vector.frontsightAzimuth)
+				&& !UnitizedDouble.isFinite(vector.backsightAzimuth)
+				&& !Vector
+					.isVertical(units.averageInclination(vector.frontsightInclination, vector.backsightInclination))) {
 				throw new SegmentParseException("azimuth can only be omitted for vertical shots", azmSegment);
 			}
 
@@ -1484,11 +1478,10 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	void checkCorrectedSign(int segStart, UnitizedDouble<Length> measurement, UnitizedDouble<Length> correction)
-			throws SegmentParseException {
-		if ((measurement.isPositive() && measurement.add(correction).isNegative()) ||
-				(measurement.isNegative() && measurement.add(correction).isPositive())) {
-			throw new SegmentParseException("correction changes sign of measurement",
-					line.substring(segStart, index));
+		throws SegmentParseException {
+		if ((measurement.isPositive() && measurement.add(correction).isNegative())
+			|| (measurement.isNegative() && measurement.add(correction).isPositive())) {
+			throw new SegmentParseException("correction changes sign of measurement", line.substring(segStart, index));
 		}
 	}
 
@@ -1500,83 +1493,84 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	UnitizedDouble<Angle> azmDifference(UnitizedDouble<Angle> fs, UnitizedDouble<Angle> bs)
-			throws SegmentParseException {
+		throws SegmentParseException {
 		if (!units.isTypeabCorrected()) {
-			bs = bs.compareTo(oneEighty) < 0
-					? bs.add(oneEighty)
-					: bs.sub(oneEighty);
+			bs = bs.compareTo(oneEighty) < 0 ? bs.add(oneEighty) : bs.sub(oneEighty);
 		}
 		UnitizedDouble<Angle> diff = fs.sub(bs).abs();
-		return diff.compareTo(oneEighty) > 0
-				? new UnitizedDouble<Angle>(360.0, Angle.degrees).sub(diff)
-				: diff;
+		return diff.compareTo(oneEighty) > 0 ? new UnitizedDouble<Angle>(360.0, Angle.degrees).sub(diff) : diff;
 	}
 
 	void azimuth() throws SegmentParseException {
 		int start = index;
 
-		oneOf(
-				() -> {
-					vector.frontsightAzimuth = optional(() -> azimuth(units.getAUnit())).orElse(null);
-					maybe(() -> {
-						expect('/');
-						vector.backsightAzimuth = optional(() -> azimuth(units.getAbUnit())).orElse(null);
-					});
-				},
-				() -> {
-					expect('/');
-					vector.backsightAzimuth = optional(() -> azimuth(units.getAbUnit())).orElse(null);
-				});
+		oneOf(() -> {
+			vector.frontsightAzimuth = optional(() -> azimuth(units.getAUnit())).orElse(null);
+			maybe(() -> {
+				expect('/');
+				vector.backsightAzimuth = optional(() -> azimuth(units.getAbUnit())).orElse(null);
+			});
+		}, () -> {
+			expect('/');
+			vector.backsightAzimuth = optional(() -> azimuth(units.getAbUnit())).orElse(null);
+		});
 
 		azmSegment = line.substring(start, index);
 
 		if (vector.frontsightAzimuth != null && vector.backsightAzimuth != null) {
 			UnitizedDouble<Angle> diff = azmDifference(vector.frontsightAzimuth, vector.backsightAzimuth);
 			if (diff.compareTo(units.getTypeabTolerance().mul(1 + 1e-6)) > 0) {
-				visitor.message(new WallsMessage("warning",
-						String.format("azimuth fs/bs difference (%1$s) exceeds tolerance (%2$s)",
-								diff,
-								units.getTypeabTolerance()),
-						azmSegment));
+				visitor
+					.message(
+						new WallsMessage(
+							"warning",
+							String
+								.format(
+									"azimuth fs/bs difference (%1$s) exceeds tolerance (%2$s)",
+									diff,
+									units.getTypeabTolerance()),
+							azmSegment));
 			}
 		}
 	}
 
 	UnitizedDouble<Angle> incDifference(UnitizedDouble<Angle> fs, UnitizedDouble<Angle> bs)
-			throws SegmentParseException {
-		return units.isTypevbCorrected()
-				? fs.sub(bs).abs()
-				: fs.add(bs).abs();
+		throws SegmentParseException {
+		return units.isTypevbCorrected() ? fs.sub(bs).abs() : fs.add(bs).abs();
 	}
 
 	void inclination() throws SegmentParseException {
 		int start = index;
 
-		oneOf(
-				() -> {
-					vector.frontsightInclination = optional(() -> inclination(units.getVUnit())).orElse(null);
-					maybe(() -> {
-						expect('/');
-						vector.backsightInclination = optional(() -> inclination(units.getVbUnit())).orElse(null);
-					});
-				},
-				() -> {
-					expect('/');
-					vector.backsightInclination = optional(() -> inclination(units.getVbUnit())).orElse(null);
-				});
+		oneOf(() -> {
+			vector.frontsightInclination = optional(() -> inclination(units.getVUnit())).orElse(null);
+			maybe(() -> {
+				expect('/');
+				vector.backsightInclination = optional(() -> inclination(units.getVbUnit())).orElse(null);
+			});
+		}, () -> {
+			expect('/');
+			vector.backsightInclination = optional(() -> inclination(units.getVbUnit())).orElse(null);
+		});
 
 		incSegment = line.substring(start, index);
 
 		if (vector.frontsightInclination == null && vector.backsightInclination == null) {
 			vector.frontsightInclination = new UnitizedDouble<Angle>(0, units.getVUnit());
-		} else if (vector.frontsightInclination != null && vector.backsightInclination != null) {
+		}
+		else if (vector.frontsightInclination != null && vector.backsightInclination != null) {
 			UnitizedDouble<Angle> diff = incDifference(vector.frontsightInclination, vector.backsightInclination);
 			if (diff.compareTo(units.getTypevbTolerance().mul(1 + 1e-6)) > 0) {
-				visitor.message(new WallsMessage("warning",
-						String.format("inclination fs/bs difference (%1$s) exceeds tolerance (%2$s)",
-								diff.toString(),
-								units.getTypevbTolerance().toString()),
-						incSegment));
+				visitor
+					.message(
+						new WallsMessage(
+							"warning",
+							String
+								.format(
+									"inclination fs/bs difference (%1$s) exceeds tolerance (%2$s)",
+									diff.toString(),
+									units.getTypevbTolerance().toString()),
+							incSegment));
 			}
 		}
 	}
@@ -1624,8 +1618,12 @@ public class WallsSurveyParser extends LineParser {
 
 	<T extends UnitType<T>> void warnIfNegative(UnitizedDouble<T> measurement, int start, String name) {
 		if (UnitizedDouble.isFinite(measurement) && measurement.get(measurement.unit) < 0) {
-			visitor.message(new WallsMessage("warning", String.format("negative %1$s measurement", name),
-					line.substring(start, index)));
+			visitor
+				.message(
+					new WallsMessage(
+						"warning",
+						String.format("negative %1$s measurement", name),
+						line.substring(start, index)));
 		}
 	}
 
@@ -1654,7 +1652,8 @@ public class WallsSurveyParser extends LineParser {
 				throw allExpected();
 			}
 			target.setVerticalVarianceOverride(vertical);
-		} else if (horizontal != null) {
+		}
+		else if (horizontal != null) {
 			// no this is not a typo
 			target.setVerticalVarianceOverride(horizontal);
 		}
@@ -1668,7 +1667,7 @@ public class WallsSurveyParser extends LineParser {
 		});
 		afterLruds();
 	}
-	
+
 	static final Pattern lrudStartRx = Pattern.compile("[<*]");
 	static final Pattern chevronRx = Pattern.compile("[<>]");
 
@@ -1677,34 +1676,44 @@ public class WallsSurveyParser extends LineParser {
 		char closing = '<' == start.charAt(0) ? '>' : '*';
 		try {
 			lrudContent();
-		} catch (SegmentParseExpectedException ex) {
+		}
+		catch (SegmentParseExpectedException ex) {
 			if (!ex.getSegment().toString().startsWith(String.valueOf(closing))) {
 				visitor.message(new WallsMessage(ex));
-			} else {
-				visitor.message(new WallsMessage("warning",
-						"missing LRUD measurment; use -- to indicate omitted measurements", ex.getSegment()));
+			}
+			else {
+				visitor
+					.message(
+						new WallsMessage(
+							"warning",
+							"missing LRUD measurment; use -- to indicate omitted measurements",
+							ex.getSegment()));
 			}
 			clearExpected();
 		}
 		try {
 			// walls accepts utterly crap data within the LRUDs without erroring,
 			// so there's a lot of utterly crap data in the wild, hence we
-			// unfortunately have to accept it.  So just skip to > if the LRUDs opened
+			// unfortunately have to accept it. So just skip to > if the LRUDs opened
 			// with <, or to * if they opened with *.
 			if ('>' == closing) {
 				// But make sure not to skip past a second <, since Walls seems to
 				// tolerate a line like
-				//   A <1 , 2, 3, 4, <5,6,7,8>
+				// A <1 , 2, 3, 4, <5,6,7,8>
 				// as a shot from A to <1 with DAV of 2, 3, 4 and LRUDs of 5, 6, 7, 8
 				Matcher m = chevronRx.matcher(line);
 				m.region(index, line.length());
-				if (m.find()) index = m.start();
-			} else {
+				if (m.find())
+					index = m.start();
+			}
+			else {
 				index = line.indexOf('*', index);
 			}
-			if (index < 0) index = line.length();
+			if (index < 0)
+				index = line.length();
 			expect(closing);
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			vector.left = vector.right = vector.up = vector.down = null;
 			throw ex;
 		}
@@ -1718,8 +1727,12 @@ public class WallsSurveyParser extends LineParser {
 				whitespaceAndOrComma();
 			}
 			if (!maybe(() -> lrudMeasurement(elem)).isPresent()) {
-				visitor.message(new WallsMessage("warning",
-						"missing LRUD measurement; use -- to indicate omitted measurements", line.substring(index)));
+				visitor
+					.message(
+						new WallsMessage(
+							"warning",
+							"missing LRUD measurement; use -- to indicate omitted measurements",
+							line.substring(index)));
 			}
 		}
 		maybeWhitespaceAndOrComma();
@@ -1816,23 +1829,19 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	void fixEast() throws SegmentParseException {
-		oneOf(
-				() -> {
-					fixStation.east = length(units.getDUnit());
-				},
-				() -> {
-					fixStation.longitude = longitude();
-				});
+		oneOf(() -> {
+			fixStation.east = length(units.getDUnit());
+		}, () -> {
+			fixStation.longitude = longitude();
+		});
 	}
 
 	void fixNorth() throws SegmentParseException {
-		oneOf(
-				() -> {
-					fixStation.north = length(units.getDUnit());
-				},
-				() -> {
-					fixStation.latitude = latitude();
-				});
+		oneOf(() -> {
+			fixStation.north = length(units.getDUnit());
+		}, () -> {
+			fixStation.latitude = latitude();
+		});
 	}
 
 	void fixUp() throws SegmentParseException {
@@ -1852,9 +1861,9 @@ public class WallsSurveyParser extends LineParser {
 		}
 		afterInlineFixNote();
 	}
-	
+
 	Pattern inlineNoteEndRx = Pattern.compile(";|#s(eg(ment)?)?|$", Pattern.CASE_INSENSITIVE);
-	
+
 	void inlineNote(HasNote target) throws SegmentParseException {
 		expect('/');
 
@@ -1871,15 +1880,13 @@ public class WallsSurveyParser extends LineParser {
 	void inlineCommentOrEndOfLine() throws SegmentParseException {
 		oneOf(() -> {
 			inlineComment();
-		},
-				() -> {
-					endOfLine();
-				});
+		}, () -> {
+			endOfLine();
+		});
 	}
 
 	void inlineCommentOrEndOfLine(HasComment target) throws SegmentParseException {
-		oneOf(() -> inlineComment(target),
-				() -> endOfLine());
+		oneOf(() -> inlineComment(target), () -> endOfLine());
 	}
 
 	void comment() throws SegmentParseException {
