@@ -1145,17 +1145,17 @@ public class WallsSurveyParser extends LineParser {
 
 	void decl() throws SegmentParseException {
 		expect('=');
-		units.setDecl(azimuthOffset(units.getAUnit()));
+		units.setDecl(azimuthOffset(Angle.degrees));
 	}
 
 	void grid() throws SegmentParseException {
 		expect('=');
-		units.setGrid(azimuthOffset(units.getAUnit()));
+		units.setGrid(azimuthOffset(Angle.degrees));
 	}
 
 	void rect() throws SegmentParseException {
 		if (maybeChar('=')) {
-			units.setRect(azimuthOffset(units.getAUnit()));
+			units.setRect(azimuthOffset(Angle.degrees));
 		}
 		else {
 			units.setVectorType(VectorType.RECTANGULAR);
