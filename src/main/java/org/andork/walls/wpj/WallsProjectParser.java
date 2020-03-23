@@ -152,9 +152,9 @@ public class WallsProjectParser extends LineParser {
 		expectIgnoreCase(".REF");
 		whitespace();
 		GeoReference ref = new GeoReference();
-		ref.easting = new UnitizedDouble<>(doubleLiteral(), Length.meters);
-		whitespace();
 		ref.northing = new UnitizedDouble<>(doubleLiteral(), Length.meters);
+		whitespace();
+		ref.easting = new UnitizedDouble<>(doubleLiteral(), Length.meters);
 		whitespace();
 		ref.zone = intLiteral();
 		whitespace();
@@ -162,7 +162,7 @@ public class WallsProjectParser extends LineParser {
 		whitespace();
 		ref.elevation = new UnitizedDouble<>(doubleLiteral(), Length.meters);
 		whitespace();
-		doubleLiteral(); // don't know what this field represents
+		ref.flags = (byte) intLiteral();
 		whitespace();
 
 		double degrees, minutes, seconds;
