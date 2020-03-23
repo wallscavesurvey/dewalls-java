@@ -174,7 +174,11 @@ public class WallsProjectParser extends LineParser {
 		seconds = unsignedDoubleLiteral();
 		whitespace();
 		ref.latitude =
-			new UnitizedDouble<>(degrees + ((minutes + seconds / 60.0) / 60.0) * Math.signum(degrees), Angle.degrees);
+			new UnitizedDouble<>(
+				degrees
+					+ ((minutes + seconds / 60.0) / 60.0)
+						* ((ref.flags & GeoReference.SouthernHemisphere) != 0 ? -1 : 1),
+				Angle.degrees);
 
 		degrees = intLiteral();
 		whitespace();
@@ -183,7 +187,11 @@ public class WallsProjectParser extends LineParser {
 		seconds = unsignedDoubleLiteral();
 		whitespace();
 		ref.longitude =
-			new UnitizedDouble<>(degrees + ((minutes + seconds / 60.0) / 60.0) * Math.signum(degrees), Angle.degrees);
+			new UnitizedDouble<>(
+				degrees
+					+ ((minutes + seconds / 60.0) / 60.0)
+						* ((ref.flags & GeoReference.WesternHemisphere) != 0 ? -1 : 1),
+				Angle.degrees);
 
 		ref.wallsDatumIndex = unsignedIntLiteral();
 		whitespace();
