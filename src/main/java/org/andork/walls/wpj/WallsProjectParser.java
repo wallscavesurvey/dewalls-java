@@ -3,7 +3,6 @@ package org.andork.walls.wpj;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -53,31 +52,31 @@ public class WallsProjectParser extends LineParser {
 		if (projectRoot == null) {
 			oneOf(() -> {
 				bookLine();
-			},
-					() -> {
-						commentLine();
-					},
-					() -> {
-						emptyLine();
-					});
-		} else if (currentEntry == null) {
+			}, () -> {
+				commentLine();
+			}, () -> {
+				emptyLine();
+			});
+		}
+		else if (currentEntry == null) {
 			oneOf(() -> {
 				commentLine();
-			},
-					() -> {
-						emptyLine();
-					});
-		} else {
-			oneOf(this::bookLine,
-					this::endbookLine,
-					this::surveyLine,
-					this::nameLine,
-					this::pathLine,
-					this::refLine,
-					this::optionsLine,
-					this::statusLine,
-					this::commentLine,
-					this::emptyLine);
+			}, () -> {
+				emptyLine();
+			});
+		}
+		else {
+			oneOf(
+				this::bookLine,
+				this::endbookLine,
+				this::surveyLine,
+				this::nameLine,
+				this::pathLine,
+				this::refLine,
+				this::optionsLine,
+				this::statusLine,
+				this::commentLine,
+				this::emptyLine);
 		}
 	}
 
@@ -94,7 +93,8 @@ public class WallsProjectParser extends LineParser {
 		WallsProjectBook newEntry = new WallsProjectBook(parent, title);
 		if (parent != null) {
 			parent.children.add(newEntry);
-		} else {
+		}
+		else {
 			projectRoot = newEntry;
 		}
 		currentEntry = newEntry;
@@ -152,9 +152,9 @@ public class WallsProjectParser extends LineParser {
 		expectIgnoreCase(".REF");
 		whitespace();
 		GeoReference ref = new GeoReference();
-		ref.northing = new UnitizedDouble<>(doubleLiteral(), Length.meters);
-		whitespace();
 		ref.easting = new UnitizedDouble<>(doubleLiteral(), Length.meters);
+		whitespace();
+		ref.northing = new UnitizedDouble<>(doubleLiteral(), Length.meters);
 		whitespace();
 		ref.zone = intLiteral();
 		whitespace();
@@ -173,8 +173,8 @@ public class WallsProjectParser extends LineParser {
 		whitespace();
 		seconds = unsignedDoubleLiteral();
 		whitespace();
-		ref.latitude = new UnitizedDouble<>(degrees + ((minutes + seconds / 60.0) / 60.0) * Math.signum(degrees),
-				Angle.degrees);
+		ref.latitude =
+			new UnitizedDouble<>(degrees + ((minutes + seconds / 60.0) / 60.0) * Math.signum(degrees), Angle.degrees);
 
 		degrees = intLiteral();
 		whitespace();
@@ -182,8 +182,8 @@ public class WallsProjectParser extends LineParser {
 		whitespace();
 		seconds = unsignedDoubleLiteral();
 		whitespace();
-		ref.longitude = new UnitizedDouble<>(degrees + ((minutes + seconds / 60.0) / 60.0) * Math.signum(degrees),
-				Angle.degrees);
+		ref.longitude =
+			new UnitizedDouble<>(degrees + ((minutes + seconds / 60.0) / 60.0) * Math.signum(degrees), Angle.degrees);
 
 		ref.wallsDatumIndex = unsignedIntLiteral();
 		whitespace();
@@ -194,13 +194,13 @@ public class WallsProjectParser extends LineParser {
 		endOfLine();
 		currentEntry.reference = ref;
 	}
-	
+
 	private static final Pattern notQuote = Pattern.compile("[^\"]+");
-	
+
 	public List<WallsMessage> getMessages() {
 		return Collections.unmodifiableList(messages);
 	}
-	
+
 	public WallsProjectBook parseFile(String fileName) throws IOException {
 		try (FileInputStream in = new FileInputStream(fileName)) {
 			return parseFile(in, fileName);
@@ -213,8 +213,7 @@ public class WallsProjectParser extends LineParser {
 		int lineNumber = 0;
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
 			String line;
-			while ((line = reader.readLine()) != null && (projectRoot == null || currentEntry != null))
-			{
+			while ((line = reader.readLine()) != null && (projectRoot == null || currentEntry != null)) {
 				line = line.trim();
 
 				try {
@@ -230,9 +229,12 @@ public class WallsProjectParser extends LineParser {
 
 			// not enough .ENDBOOKs at end?
 			if (currentEntry != null) {
-				messages.add(new WallsMessage("error",
-										  "unexpected end of file: " + fileName,
-										  new Segment("", fileName, lineNumber, 0)));
+				messages
+					.add(
+						new WallsMessage(
+							"error",
+							"unexpected end of file: " + fileName,
+							new Segment("", fileName, lineNumber, 0)));
 				return null;
 			}
 
@@ -240,11 +242,15 @@ public class WallsProjectParser extends LineParser {
 				projectRoot.path = Paths.get(fileName).toAbsolutePath().getParent().normalize();
 			}
 
-			return projectRoot;	
-		} catch (IOException ex) {
-			messages.add(new WallsMessage("error",
-					  "failed to read from file: " + fileName,
-					  new Segment("", fileName, lineNumber, 0)));
+			return projectRoot;
+		}
+		catch (IOException ex) {
+			messages
+				.add(
+					new WallsMessage(
+						"error",
+						"failed to read from file: " + fileName,
+						new Segment("", fileName, lineNumber, 0)));
 			return null;
 		}
 	}

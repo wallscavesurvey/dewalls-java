@@ -20,49 +20,63 @@ public class WallsProjectEntry {
 	GeoReference reference;
 
 	public static enum LaunchOptions {
-		Properties, Edit, Open;
+		Properties,
+		Edit,
+		Open;
 	};
 
 	public static enum View {
-		NorthOrEast, NorthOrWest, North, East, West;
+		NorthOrEast,
+		NorthOrWest,
+		North,
+		East,
+		West;
 	};
 
+	// Suspiciously, the rightmost bit in the Walls source code (prjhier.h) is name
+	// defines segment. I guess the rightmost 3 bits get inserted by something else.
+
 	// status BITS
-	//  2^0 : Type = Book
-	//  2^1 : ?
-	//  2^2 : ?
-	//  2^3 : name defines segment
-	//  2^4 : 1 = Feet, 0 = Meters
-	//  2^5 : ?
-	//  2^6 : reference unspecified
-	//  2^7 : ?
-	//Derive decl from date:
-	//  2^8 : 1 = no
-	//  2^9 : 1 = yes
-	//UTM/GPS Grid-relative:
-	//  2^10: 1 = no
-	//  2^11: 1 = yes
-	//Preserve vertical shot orientation:
-	//  2^12: 1 = no
-	//  2^13: 1 = yes
-	//Preserve vertical shot length:
-	//  2^14: 1 = no
-	//  2^15: 1 = yes
-	//Other type
-	//  2^16: 1 = type is other
-	//  2^17: edit on launch
-	//  2^18: open on launch
-	//Default view after compilation (bits 21-19):
-	//     1: North or East
-	//	   10: North or West
-	//    11: North
-	//   100: East
-	//   101: West
+	// 2^0 : Type = Book
+	// 2^1 : detached
+	// 2^2 : ?
+	// 2^3 : name defines segment
+	// 2^4 : 1 = Feet, 0 = Meters
+	// 2^5 : ? (FLG_WESTWARD in Walls source code, not sure if it's still used?)
+	// Use georeference:
+	// 2^6 : 1 = no
+	// 2^7 : 1 = yes
+	// flag though)
+	// Derive decl from date:
+	// 2^8 : 1 = no
+	// 2^9 : 1 = yes
+	// UTM/GPS Grid-relative:
+	// 2^10: 1 = no
+	// 2^11: 1 = yes
+	// Preserve vertical shot orientation:
+	// 2^12: 1 = no
+	// 2^13: 1 = yes
+	// Preserve vertical shot length:
+	// 2^14: 1 = no
+	// 2^15: 1 = yes
+	// Other type
+	// 2^16: 1 = type is other (FLG_SURVEYNOT in Walls source code)
+	// 2^17: edit on launch
+	// 2^18: open on launch
+	// Default view after compilation (bits 21-19):
+	// 1: North or East
+	// 10: North or West
+	// 11: North
+	// 100: East
+	// 101: West
+	//
+	// 2^22: Process source SVG if one is attached
 
 	public static final int DetachedBit = 1 << 1;
 	public static final int NameDefinesSegmentBit = 1 << 3;
 	public static final int FeetBit = 1 << 4;
-	public static final int ReferenceUnspecifiedBit = 1 << 6;
+	public static final int DontUseGeoreferenceBit = 1 << 6;
+	public static final int UseGeoreferenceBit = 1 << 7;
 	public static final int DontDeriveDeclBit = 1 << 8;
 	public static final int DeriveDeclBit = 1 << 9;
 	public static final int NotGridRelativeBit = 1 << 10;
@@ -80,6 +94,7 @@ public class WallsProjectEntry {
 	public static final int NorthViewBits = 3 << 19;
 	public static final int EastViewBits = 4 << 19;
 	public static final int WestViewBits = 5 << 19;
+	public static final int ProcessSvgIfAttached = 1 << 22;
 
 	public WallsProjectEntry(WallsProjectBook parent, String title) {
 		super();
@@ -96,7 +111,8 @@ public class WallsProjectEntry {
 	}
 
 	public boolean isDetatched() {
-		if (parent == null) return false;
+		if (parent == null)
+			return false;
 		return (status & DetachedBit) != 0;
 	}
 
@@ -105,10 +121,10 @@ public class WallsProjectEntry {
 	}
 
 	public GeoReference reference() {
-		if ((status & ReferenceUnspecifiedBit) != 0) {
+		if ((status & DontUseGeoreferenceBit) != 0) {
 			return new GeoReference();
 		}
-		if (reference != null) {
+		if ((status & UseGeoreferenceBit) != 0 && reference != null) {
 			return reference;
 		}
 		if (parent != null) {
@@ -203,6 +219,10 @@ public class WallsProjectEntry {
 		}
 	}
 
+	public boolean processSvgIfAttached() {
+		return (status & ProcessSvgIfAttached) != 0;
+	}
+
 	public Path dir() {
 		if (parent == null || path != null && path.isAbsolute()) {
 			return path;
@@ -221,9 +241,11 @@ public class WallsProjectEntry {
 		if (isSurvey() && !name.matches("\\.[sS][rR][vV]$")) {
 			if (Files.exists(dir().resolve(name + ".SRV").toAbsolutePath().normalize())) {
 				name += ".SRV";
-			} else if (Files.exists(dir().resolve(name + ".srv").toAbsolutePath().normalize())) {
+			}
+			else if (Files.exists(dir().resolve(name + ".srv").toAbsolutePath().normalize())) {
 				name += ".srv";
-			} else {
+			}
+			else {
 				name += ".SRV";
 			}
 		}
@@ -240,26 +262,27 @@ public class WallsProjectEntry {
 		}
 		return options;
 	}
-	
+
 	public String title() {
 		return title;
 	}
-	
+
 	public List<String> titlePath() {
 		List<String> result;
 		if (parent != null) {
 			result = parent.titlePath();
-		} else {
+		}
+		else {
 			result = new ArrayList<>();
 		}
 		result.add(title);
-		return result;		
+		return result;
 	}
-	
+
 	public Segment name() {
 		return name;
 	}
-	
+
 	public Segment statusSegment() {
 		return statusSegment;
 	}

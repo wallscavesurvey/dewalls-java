@@ -288,6 +288,7 @@ public class WallsSurveyParser extends LineParser {
 
 	static Map<String, Integer> createPrefixDirectives() {
 		Map<String, Integer> result = new HashMap<>();
+		result.put("#p", 0);
 		result.put("#prefix", 0);
 		result.put("#prefix1", 0);
 		result.put("#prefix2", 1);
@@ -306,11 +307,14 @@ public class WallsSurveyParser extends LineParser {
 		result.put("feet", this::feet);
 		result.put("ct", this::ct);
 		result.put("d", this::d);
+		result.put("distance", this::d);
 		result.put("s", this::s);
 		result.put("a", this::a);
+		result.put("azimuth", this::a);
 		result.put("ab", this::ab);
 		result.put("a/ab", this::a_ab);
 		result.put("v", this::v);
+		result.put("vertical", this::v);
 		result.put("vb", this::vb);
 		result.put("v/vb", this::v_vb);
 		result.put("o", this::order);
@@ -330,6 +334,7 @@ public class WallsSurveyParser extends LineParser {
 		result.put("case", this::case_);
 		result.put("lrud", this::lrud);
 		result.put("tape", this::tape);
+		result.put("p", this::prefix1);
 		result.put("prefix", this::prefix1);
 		result.put("prefix1", this::prefix1);
 		result.put("prefix2", this::prefix2);
@@ -350,6 +355,7 @@ public class WallsSurveyParser extends LineParser {
 		result.put("#f", this::flagLine);
 		result.put("#fix", this::fixLine);
 		result.put("#note", this::noteLine);
+		result.put("#n", this::noteLine);
 		result.put("#symbol", this::symbolLine);
 		result.put("#sym", this::symbolLine);
 		result.put("#segment", this::segmentLine);
@@ -362,6 +368,7 @@ public class WallsSurveyParser extends LineParser {
 		result.put("#prefix2", this::prefixLine);
 		result.put("#prefix3", this::prefixLine);
 		result.put("#prefix", this::prefixLine);
+		result.put("#p", this::prefixLine);
 		result.put("#", this::emptyDirectiveLine);
 		return Collections.unmodifiableMap(result);
 	}
