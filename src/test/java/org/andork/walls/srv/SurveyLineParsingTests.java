@@ -11,13 +11,6 @@ import org.andork.unit.Angle;
 import org.andork.unit.Length;
 import org.andork.unit.UnitizedDouble;
 import org.andork.walls.WallsMessage;
-import org.andork.walls.srv.AbstractWallsVisitor;
-import org.andork.walls.srv.CtMeasurement;
-import org.andork.walls.srv.FixedStation;
-import org.andork.walls.srv.MutableWallsUnits;
-import org.andork.walls.srv.VarianceOverride;
-import org.andork.walls.srv.Vector;
-import org.andork.walls.srv.WallsSurveyParser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +65,7 @@ public class SurveyLineParsingTests {
 		Assert.assertEquals(Angle.degrees(2.3), vector.frontsightInclination);
 		Assert.assertNull(vector.backsightInclination);
 	}
-	
+
 	@Test
 	public void testVectorSegment() throws SegmentParseException {
 		parser.parseLine("A1 A2 2.5 350 2.3 #S Hello");
@@ -86,7 +79,7 @@ public class SurveyLineParsingTests {
 		Assert.assertNull(vector.backsightInclination);
 		Assert.assertEquals(Arrays.asList("Hello"), vector.segment);
 	}
-	
+
 	@Test
 	public void testRootSegment() throws SegmentParseException {
 		List<String> segment = Arrays.asList("Hello", "World");
@@ -94,31 +87,31 @@ public class SurveyLineParsingTests {
 		parser.rootSegment.addAll(segment);
 
 		parser.parseLine("A1 A2 2.5 350 2.3");
-		Assert.assertEquals(segment, vector.segment);		
+		Assert.assertEquals(segment, vector.segment);
 		parser.parseLine("#FIX A1 W97 N31 323");
-		Assert.assertEquals(segment, fixedStation.segment);		
-		
+		Assert.assertEquals(segment, fixedStation.segment);
+
 		parser.parseLine("A1 A2 2.5 350 2.3 #S Foo");
-		Assert.assertEquals(Arrays.asList("Hello", "World", "Foo"), vector.segment);		
+		Assert.assertEquals(Arrays.asList("Hello", "World", "Foo"), vector.segment);
 		parser.parseLine("#FIX A1 W97 N31 323 #S Foo");
-		Assert.assertEquals(Arrays.asList("Hello", "World", "Foo"), fixedStation.segment);		
-		
+		Assert.assertEquals(Arrays.asList("Hello", "World", "Foo"), fixedStation.segment);
+
 		parser.parseLine("#Seg /Bar");
 		parser.parseLine("A1 A2 2.5 350 2.3");
-		Assert.assertEquals(Arrays.asList("Hello", "World", "Bar"), vector.segment);		
+		Assert.assertEquals(Arrays.asList("Hello", "World", "Bar"), vector.segment);
 		parser.parseLine("#FIX A1 W97 N31 323");
-		Assert.assertEquals(Arrays.asList("Hello", "World", "Bar"), fixedStation.segment);		
+		Assert.assertEquals(Arrays.asList("Hello", "World", "Bar"), fixedStation.segment);
 
 		parser.parseLine("#Seg Bar");
 		parser.parseLine("A1 A2 2.5 350 2.3");
 		Assert.assertEquals(Arrays.asList("Bar"), vector.segment);
 		parser.parseLine("#FIX A1 W97 N31 323");
-		Assert.assertEquals(Arrays.asList("Bar"), fixedStation.segment);		
+		Assert.assertEquals(Arrays.asList("Bar"), fixedStation.segment);
 
 		parser.parseLine("A1 A2 2.5 350 2.3 #S /");
-		Assert.assertEquals(segment, vector.segment);		
+		Assert.assertEquals(segment, vector.segment);
 		parser.parseLine("#FIX A1 W97 N31 323 #S /");
-		Assert.assertEquals(segment, fixedStation.segment);		
+		Assert.assertEquals(segment, fixedStation.segment);
 	}
 
 	@Test
@@ -361,17 +354,20 @@ public class SurveyLineParsingTests {
 		Assert.assertEquals(1, messages.size());
 		Assert.assertTrue(messages.get(0).message.contains("exceeds"));
 	}
-	
+
 	@Test
 	public void testShittyUnitsSyntax() throws SegmentParseException {
 		messages.clear();
 		parser.parseLine("#units typevb=c, feet, order=vad,");
 		Assert.assertEquals(Length.feet, parser.units.getDUnit());
-		Assert.assertEquals(Arrays.asList(CtMeasurement.INCLINATION, CtMeasurement.AZIMUTH, CtMeasurement.DISTANCE), parser.units.getCtOrder());
+		Assert
+			.assertEquals(
+				Arrays.asList(CtMeasurement.INCLINATION, CtMeasurement.AZIMUTH, CtMeasurement.DISTANCE),
+				parser.units.getCtOrder());
 		Assert.assertEquals(true, parser.units.isTypevbCorrected());
 		Assert.assertEquals(0, messages.size());
 	}
-	
+
 	@Test
 	public void testShittyCtLineSyntax() throws SegmentParseException {
 		messages.clear();
@@ -387,7 +383,7 @@ public class SurveyLineParsingTests {
 		Assert.assertEquals(Length.meters(4), vector.up);
 		Assert.assertEquals(Length.meters(5), vector.down);
 	}
-	
+
 	@Test
 	public void testShittyLRUDOnlySyntaxes() throws SegmentParseException {
 		messages.clear();
@@ -402,7 +398,7 @@ public class SurveyLineParsingTests {
 		Assert.assertEquals(Length.meters(4), vector.right);
 		Assert.assertEquals(Length.meters(5), vector.up);
 		Assert.assertEquals(Length.meters(6), vector.down);
-		
+
 		messages.clear();
 		parser.parseLine("#units m order=dav");
 		parser.parseLine("A - <3,4,5,6>");
@@ -474,7 +470,7 @@ public class SurveyLineParsingTests {
 		Assert.assertEquals(Length.meters(7), vector.up);
 		Assert.assertEquals(Length.meters(8), vector.down);
 	}
-	
+
 	@Test
 	public void testNoteSegmentAmbiguity() throws SegmentParseException {
 		parser.parseLine("#FIX STANA:ostgps1 	736149	1988944	1385	/Osto de Cerro Voludo #1 #SEG foo");
@@ -572,11 +568,9 @@ public class SurveyLineParsingTests {
 
 		parser.parseLine("A B 1 2 3 (1000f,r4.5f)");
 		Assert.assertTrue(vector.horizontalVariance instanceof VarianceOverride.Length);
-		Assert.assertEquals(Length.feet(1000),
-				((VarianceOverride.Length) vector.horizontalVariance).lengthOverride);
+		Assert.assertEquals(Length.feet(1000), ((VarianceOverride.Length) vector.horizontalVariance).lengthOverride);
 		Assert.assertTrue(vector.verticalVariance instanceof VarianceOverride.RMSError);
-		Assert.assertEquals(Length.feet(4.5),
-				((VarianceOverride.RMSError) vector.verticalVariance).error);
+		Assert.assertEquals(Length.feet(4.5), ((VarianceOverride.RMSError) vector.verticalVariance).error);
 	}
 
 	@Test
@@ -862,7 +856,14 @@ public class SurveyLineParsingTests {
 		Assert.assertEquals("b", parser.units.processStationName("::b"));
 		Assert.assertEquals("b", parser.units.processStationName(":::::b"));
 
-		parser.parseLine("#units prefix1");
+		parser.parseLine("#units prefix2=c case=upper");
+		Assert.assertEquals("c:a:B", parser.units.processStationName("b"));
+		Assert.assertEquals("c::B", parser.units.processStationName(":b"));
+		Assert.assertEquals("c:d:B", parser.units.processStationName("d:b"));
+		Assert.assertEquals("B", parser.units.processStationName("::b"));
+		Assert.assertEquals("B", parser.units.processStationName(":::::b"));
+
+		parser.parseLine("#units prefix1 case=mixed");
 		Assert.assertEquals("c::b", parser.units.processStationName("b"));
 	}
 
@@ -870,7 +871,8 @@ public class SurveyLineParsingTests {
 	public void testBasicFixedStations() throws SegmentParseException {
 		parser.parseLine("#FIX A1 W97:43:52.5 N31:16:45 323f (?,*) /Entrance #s blah ;dms with ft elevations");
 		Assert.assertEquals("A1", fixedStation.name);
-		Assert.assertEquals(new UnitizedDouble<>(-97 - (43 + 52.5 / 60.0) / 60.0, Angle.degrees), fixedStation.longitude);
+		Assert
+			.assertEquals(new UnitizedDouble<>(-97 - (43 + 52.5 / 60.0) / 60.0, Angle.degrees), fixedStation.longitude);
 		Assert.assertEquals(new UnitizedDouble<>(31 + (16 + 45 / 60.0) / 60.0, Angle.degrees), fixedStation.latitude);
 		Assert.assertEquals(Length.feet(323), fixedStation.elevation);
 		Assert.assertEquals(VarianceOverride.FLOATED, fixedStation.horizontalVariance);
@@ -978,36 +980,36 @@ public class SurveyLineParsingTests {
 		Assert.assertEquals("a b 1 2 3", comment);
 		Assert.assertNull(vector);
 	}
-	
+
 	@Test
 	public void testBlockComments() throws SegmentParseException {
-	    parser.parseLine("#[");
-	    parser.parseLine("a b 1 2 3");
-	    Assert.assertEquals("a b 1 2 3" ,  comment);
-	    Assert.assertNull(vector);
-	    parser.parseLine("#units f");
-	    Assert.assertEquals(Length.meters ,  parser.units.getDUnit());
-	    parser.parseLine("#]");
-	    parser.parseLine("a b 1 2 3");
-	    Assert.assertEquals("a" ,  vector.from);
-	    Assert.assertEquals("b" ,  vector.to);
-	    Assert.assertEquals(Length.meters(1) ,  vector.distance);
-	    Assert.assertEquals(Angle.degrees(2) ,  vector.frontsightAzimuth);
-	    Assert.assertEquals(Angle.degrees(3) ,  vector.frontsightInclination);
+		parser.parseLine("#[");
+		parser.parseLine("a b 1 2 3");
+		Assert.assertEquals("a b 1 2 3", comment);
+		Assert.assertNull(vector);
+		parser.parseLine("#units f");
+		Assert.assertEquals(Length.meters, parser.units.getDUnit());
+		parser.parseLine("#]");
+		parser.parseLine("a b 1 2 3");
+		Assert.assertEquals("a", vector.from);
+		Assert.assertEquals("b", vector.to);
+		Assert.assertEquals(Length.meters(1), vector.distance);
+		Assert.assertEquals(Angle.degrees(2), vector.frontsightAzimuth);
+		Assert.assertEquals(Angle.degrees(3), vector.frontsightInclination);
 	}
-	
+
 	@Test
 	public void testAverageInclination() throws SegmentParseException {
 		MutableWallsUnits units = new MutableWallsUnits();
 		units.setTypevbCorrected(true);
-	    Assert.assertEquals(Angle.degrees(2) ,  units.averageInclination(Angle.degrees(3), Angle.degrees(1)));
-	    Assert.assertEquals(Angle.degrees(2) ,  units.averageInclination(Angle.degrees(1), Angle.degrees(3)));
-	    Assert.assertEquals(Angle.degrees(3) ,  units.averageInclination(Angle.degrees(3), null));
-	    Assert.assertEquals(Angle.degrees(3) ,  units.averageInclination(null, Angle.degrees(3)));
-	
-	    units.setTypevbCorrected(false);
-	    Assert.assertEquals(Angle.degrees(2) ,  units.averageInclination(Angle.degrees(3), Angle.degrees(-1)));
-	    Assert.assertEquals(Angle.degrees(2) ,  units.averageInclination(Angle.degrees(1), Angle.degrees(-3)));
-	    Assert.assertEquals(Angle.degrees(-3) ,  units.averageInclination(null, Angle.degrees(3)));
+		Assert.assertEquals(Angle.degrees(2), units.averageInclination(Angle.degrees(3), Angle.degrees(1)));
+		Assert.assertEquals(Angle.degrees(2), units.averageInclination(Angle.degrees(1), Angle.degrees(3)));
+		Assert.assertEquals(Angle.degrees(3), units.averageInclination(Angle.degrees(3), null));
+		Assert.assertEquals(Angle.degrees(3), units.averageInclination(null, Angle.degrees(3)));
+
+		units.setTypevbCorrected(false);
+		Assert.assertEquals(Angle.degrees(2), units.averageInclination(Angle.degrees(3), Angle.degrees(-1)));
+		Assert.assertEquals(Angle.degrees(2), units.averageInclination(Angle.degrees(1), Angle.degrees(-3)));
+		Assert.assertEquals(Angle.degrees(-3), units.averageInclination(null, Angle.degrees(3)));
 	}
 }

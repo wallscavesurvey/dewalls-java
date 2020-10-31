@@ -123,7 +123,10 @@ module.exports = {
 		if (name == null) {
 			return name;
 		}
-		name = getCase_().apply(name);
+		int baseStationIndex = name.lastIndexOf(':') + 1;
+		if (baseStationIndex < name.length()) {
+			name = name.substring(0, baseStationIndex) + getCase_().apply(name.substring(baseStationIndex));
+		}
 		int explicitPrefixCount = name.length() - name.replace(":", "").length();
 		List<String> prefix = getPrefix();
 		for (int i = explicitPrefixCount; i < prefix.size(); i++) {
