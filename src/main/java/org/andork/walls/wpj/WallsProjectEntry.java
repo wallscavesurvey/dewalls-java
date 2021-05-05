@@ -39,10 +39,12 @@ public class WallsProjectEntry {
 	// status BITS
 	// 2^0 : Type = Book
 	// 2^1 : detached
-	// 2^2 : ?
+	// 2^2 : ? (maybe this is whether it's compiled?)
 	// 2^3 : name defines segment
 	// 2^4 : 1 = Feet, 0 = Meters
 	// 2^5 : ? (FLG_WESTWARD in Walls source code, not sure if it's still used?)
+	// In the following cases, if both the no and the yes bit are 0,
+	// the value is inherited from the parent instead.
 	// Use georeference:
 	// 2^6 : 1 = no
 	// 2^7 : 1 = yes
@@ -50,7 +52,7 @@ public class WallsProjectEntry {
 	// Derive decl from date:
 	// 2^8 : 1 = no
 	// 2^9 : 1 = yes
-	// UTM/GPS Grid-relative:
+	// UTM/UPS Grid-relative:
 	// 2^10: 1 = no
 	// 2^11: 1 = yes
 	// Preserve vertical shot orientation:
