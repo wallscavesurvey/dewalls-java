@@ -417,6 +417,7 @@ public class WallsSurveyParser extends LineParser {
 	static final Pattern usDateRx1 = Pattern.compile("\\d{2}-\\d{2}-\\d{2,4}");
 	static final Pattern usDateRx2 = Pattern.compile("\\d{2}/\\d{2}/\\d{2,4}");
 	static final Pattern usDateRx3 = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}");
+	static final Pattern usDateRx4 = Pattern.compile("\\d{4}/\\d{1,2}/\\d{1,2}");
 
 	static final Pattern segmentPartRx = Pattern.compile("[^./\\;]?[^/\\;]+");
 
@@ -887,6 +888,9 @@ public class WallsSurveyParser extends LineParser {
 		if (maybeWhitespace().isPresent()) {
 			units.setPrefix(prefixIndex, expect(prefixRx, "<PREFIX>").toString());
 		}
+		else {
+			units.setPrefix(prefixIndex, "");
+		}
 	}
 
 	void noteLine() throws SegmentParseException {
@@ -968,7 +972,7 @@ public class WallsSurveyParser extends LineParser {
 	Date dateDirective() throws SegmentParseException {
 		expectIgnoreCase("#date");
 		whitespace();
-		return oneOf(() -> usDate1(), () -> usDate2(), () -> usDate3());
+		return oneOf(() -> usDate1(), () -> usDate2(), () -> usDate3(), () -> usDate4());
 	}
 
 	void emptyDirectiveLine() throws SegmentParseException {
@@ -980,6 +984,7 @@ public class WallsSurveyParser extends LineParser {
 	static DateFormat fullDateFormat2 = new SimpleDateFormat("MM/dd/yyyy");
 	static DateFormat shortDateFormat2 = new SimpleDateFormat("MM/dd/yy");
 	static DateFormat fullDateFormat3 = new SimpleDateFormat("yyyy-M-d");
+	static DateFormat fullDateFormat4 = new SimpleDateFormat("yyyy/M/d");
 
 	Date usDate1() throws SegmentParseExpectedException {
 		String str = expect(usDateRx1, "<DATE>").toString();
@@ -1007,6 +1012,17 @@ public class WallsSurveyParser extends LineParser {
 		String str = expect(usDateRx3, "<DATE>").toString();
 		try {
 			return fullDateFormat3.parse(str);
+		}
+		catch (ParseException ex) {
+			// should never happen because of regex
+			return null;
+		}
+	}
+
+	Date usDate4() throws SegmentParseExpectedException {
+		String str = expect(usDateRx4, "<DATE>").toString();
+		try {
+			return fullDateFormat4.parse(str);
 		}
 		catch (ParseException ex) {
 			// should never happen because of regex
