@@ -196,14 +196,14 @@ public class WallsProjectParser extends LineParser {
 		ref.wallsDatumIndex = unsignedIntLiteral();
 		whitespace();
 		expect('"');
-		ref.datumName = expect(notQuote, "<DATUM_NAME>").toString();
+		ref.datumName = expect(datumName, "<DATUM_NAME>").toString();
 		expect('"');
 		maybeWhitespace();
 		endOfLine();
 		currentEntry.reference = ref;
 	}
 
-	private static final Pattern notQuote = Pattern.compile("[^\"]+");
+	private static final Pattern datumName = Pattern.compile("[^\"]*");
 
 	public List<WallsMessage> getMessages() {
 		return Collections.unmodifiableList(messages);
