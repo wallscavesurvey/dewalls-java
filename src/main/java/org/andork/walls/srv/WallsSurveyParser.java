@@ -1897,7 +1897,7 @@ public class WallsSurveyParser extends LineParser {
 		if (maybe(() -> inlineFixDirective()).isPresent()) {
 			maybeWhitespaceAndOrComma();
 		}
-		inlineCommentOrEndOfLine(fixStation);
+		inlineCommentOrEndOfLine();
 	}
 
 	void inlineCommentOrEndOfLine() throws SegmentParseException {
@@ -1908,10 +1908,6 @@ public class WallsSurveyParser extends LineParser {
 		});
 	}
 
-	void inlineCommentOrEndOfLine(HasComment target) throws SegmentParseException {
-		oneOf(() -> inlineComment(target), () -> endOfLine());
-	}
-
 	void comment() throws SegmentParseException {
 		expect(';');
 		visitor.parsedComment(remaining().toString());
@@ -1919,7 +1915,16 @@ public class WallsSurveyParser extends LineParser {
 
 	void inlineComment() throws SegmentParseException {
 		expect(';');
-		visitor.parsedComment(remaining().toString());
+		String comment = remaining().toString();
+		if (comment != null && !comment.isEmpty()) {
+			if (vector != null) {
+				vector.comment = comment;
+			}
+			else if (fixStation != null) {
+				fixStation.comment = comment;
+			}
+			visitor.parsedComment(comment);
+		}
 	}
 
 	void inlineComment(HasComment target) throws SegmentParseException {
