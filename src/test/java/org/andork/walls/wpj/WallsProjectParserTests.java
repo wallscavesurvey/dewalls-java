@@ -132,17 +132,23 @@ public class WallsProjectParserTests {
 		parser.parseLine(".endbook"); // root
 
 		WallsProjectBook root = parser.result();
+		
+		String os = System.getProperty("os.name");
+		String fsroot = "/";
+		if (os != null && os.toLowerCase().matches("^win")) {
+			fsroot = "C:\\";
+		}
 
 		Assert.assertNotNull(root);
-		Assert.assertEquals("/rootdir", absolutePath(root));
-		Assert.assertEquals("/rootdir", absolutePath(entryAt(root, "a")));
-		Assert.assertEquals("/rootdir/bdir", absolutePath(entryAt(root, "a/b")));
-		Assert.assertEquals("/rootdir/bdir", absolutePath(entryAt(root, "a/b/c")));
-		Assert.assertEquals("/rootdir/bdir/ddir", absolutePath(entryAt(root, "a/b/d")));
-		Assert.assertEquals("/rootdir/bdir/ddir", absolutePath(entryAt(root, "a/b/d/e")));
-		Assert.assertEquals("/rootdir/fdir", absolutePath(entryAt(root, "a/f")));
-		Assert.assertEquals("/rootdir/fdir/gsurvey.SRV", absolutePath(entryAt(root, "a/f/g")));
-		Assert.assertEquals("/hdir", absolutePath(entryAt(root, "a/h")));
+		Assert.assertEquals(fsroot + "rootdir", absolutePath(root));
+		Assert.assertEquals(fsroot + "rootdir", absolutePath(entryAt(root, "a")));
+		Assert.assertEquals(fsroot + "rootdir/bdir", absolutePath(entryAt(root, "a/b")));
+		Assert.assertEquals(fsroot + "rootdir/bdir", absolutePath(entryAt(root, "a/b/c")));
+		Assert.assertEquals(fsroot + "rootdir/bdir/ddir", absolutePath(entryAt(root, "a/b/d")));
+		Assert.assertEquals(fsroot + "rootdir/bdir/ddir", absolutePath(entryAt(root, "a/b/d/e")));
+		Assert.assertEquals(fsroot + "rootdir/fdir", absolutePath(entryAt(root, "a/f")));
+		Assert.assertEquals(fsroot + "rootdir/fdir/gsurvey.SRV", absolutePath(entryAt(root, "a/f/g")));
+		Assert.assertEquals(fsroot + "hdir", absolutePath(entryAt(root, "a/h")));
 		Assert.assertNull(absolutePath(entryAt(root, "a/i")));
 	}
 }
