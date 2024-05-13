@@ -135,7 +135,7 @@ public class WallsProjectParserTests {
 		
 		String os = System.getProperty("os.name");
 		String fsroot = "/";
-		if (os != null && os.toLowerCase().matches("^win")) {
+		if (os != null && os.toLowerCase().contains("win")) {
 			fsroot = "C:\\";
 		}
 
