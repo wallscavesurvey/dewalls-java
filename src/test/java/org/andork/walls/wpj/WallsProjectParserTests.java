@@ -2,6 +2,7 @@ package org.andork.walls.wpj;
 
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.andork.segment.SegmentParseException;
 import org.andork.unit.Angle;
@@ -134,21 +135,22 @@ public class WallsProjectParserTests {
 		WallsProjectBook root = parser.result();
 		
 		String os = System.getProperty("os.name");
-		String fsroot = "/";
+		Function<String, String> normalize = str -> str;
 		if (os != null && os.toLowerCase().contains("win")) {
-			fsroot = "C:\\";
+			normalize = str -> "C:" + str.replaceAll("/", "\\\\");
 		}
+				
 
 		Assert.assertNotNull(root);
-		Assert.assertEquals(fsroot + "rootdir", absolutePath(root));
-		Assert.assertEquals(fsroot + "rootdir", absolutePath(entryAt(root, "a")));
-		Assert.assertEquals(fsroot + "rootdir/bdir", absolutePath(entryAt(root, "a/b")));
-		Assert.assertEquals(fsroot + "rootdir/bdir", absolutePath(entryAt(root, "a/b/c")));
-		Assert.assertEquals(fsroot + "rootdir/bdir/ddir", absolutePath(entryAt(root, "a/b/d")));
-		Assert.assertEquals(fsroot + "rootdir/bdir/ddir", absolutePath(entryAt(root, "a/b/d/e")));
-		Assert.assertEquals(fsroot + "rootdir/fdir", absolutePath(entryAt(root, "a/f")));
-		Assert.assertEquals(fsroot + "rootdir/fdir/gsurvey.SRV", absolutePath(entryAt(root, "a/f/g")));
-		Assert.assertEquals(fsroot + "hdir", absolutePath(entryAt(root, "a/h")));
+		Assert.assertEquals(normalize.apply("/rootdir"), absolutePath(root));
+		Assert.assertEquals(normalize.apply("/rootdir"), absolutePath(entryAt(root, "a")));
+		Assert.assertEquals(normalize.apply("/rootdir/bdir"), absolutePath(entryAt(root, "a/b")));
+		Assert.assertEquals(normalize.apply("/rootdir/bdir"), absolutePath(entryAt(root, "a/b/c")));
+		Assert.assertEquals(normalize.apply("/rootdir/bdir/ddir"), absolutePath(entryAt(root, "a/b/d")));
+		Assert.assertEquals(normalize.apply("/rootdir/bdir/ddir"), absolutePath(entryAt(root, "a/b/d/e")));
+		Assert.assertEquals(normalize.apply("/rootdir/fdir"), absolutePath(entryAt(root, "a/f")));
+		Assert.assertEquals(normalize.apply("/rootdir/fdir/gsurvey.SRV"), absolutePath(entryAt(root, "a/f/g")));
+		Assert.assertEquals(normalize.apply("/hdir"), absolutePath(entryAt(root, "a/h")));
 		Assert.assertNull(absolutePath(entryAt(root, "a/i")));
 	}
 }
