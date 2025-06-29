@@ -126,7 +126,7 @@ public class WallsProjectParserTests {
 		parser.parseLine(".name gsurvey");
 		parser.parseLine(".endbook"); // f
 		parser.parseLine(".book h");
-		parser.parseLine(".path /hdir");
+		parser.parseLine(".path \\hdir");
 		parser.parseLine(".endbook"); // h
 		parser.parseLine(".survey i");
 		parser.parseLine(".endbook"); // a
