@@ -116,7 +116,7 @@ public class WallsProjectParser extends LineParser {
 	void pathLine() throws SegmentParseExpectedException {
 		expectIgnoreCase(".PATH");
 		whitespace();
-		currentEntry.path = Paths.get(remaining().toString().replaceAll("\\\\", File.separator));
+		currentEntry.path = Paths.get(remaining().toString().replaceAll("[/\\\\]", File.separator.equals("\\") ? "\\\\" : File.separator));
 	}
 
 	void surveyLine() throws SegmentParseExpectedException {
