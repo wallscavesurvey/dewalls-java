@@ -1366,7 +1366,7 @@ public class WallsSurveyParser extends LineParser {
 			vector.sourceSegment = line;
 			vector.from = from;
 			lruds();
-			afterLruds();
+			afterVarianceAndLruds();
 		}, () -> {
 			toStation();
 			afterToStation();
@@ -1648,9 +1648,23 @@ public class WallsSurveyParser extends LineParser {
 	void afterVectorMeasurements() throws SegmentParseException {
 		maybeWithLookahead(() -> {
 			whitespaceAndOrComma();
-			varianceOverrides();
+			oneOfWithLookahead(() -> {
+				varianceOverrides();
+				maybeWithLookahead(() -> {
+					whitespaceAndOrComma();
+					lruds();
+				});
+
+			}, () -> {
+				lruds();
+				maybeWithLookahead(() -> {
+					whitespaceAndOrComma();
+					varianceOverrides();
+				});
+
+			});
 		});
-		afterVectorVarianceOverrides();
+		afterVarianceAndLruds();
 	}
 
 	void varianceOverrides() throws SegmentParseException {
@@ -1676,14 +1690,6 @@ public class WallsSurveyParser extends LineParser {
 			target.setVerticalVarianceOverride(horizontal);
 		}
 		expect(')');
-	}
-
-	void afterVectorVarianceOverrides() throws SegmentParseException {
-		maybeWithLookahead(() -> {
-			whitespaceAndOrComma();
-			lruds();
-		});
-		afterLruds();
 	}
 
 	static final Pattern lrudStartRx = Pattern.compile("[<*]");
@@ -1777,7 +1783,7 @@ public class WallsSurveyParser extends LineParser {
 		vector.cFlag = true;
 	}
 
-	void afterLruds() throws SegmentParseException {
+	void afterVarianceAndLruds() throws SegmentParseException {
 		maybeWhitespaceAndOrComma();
 		if (maybe(() -> inlineDirective()).isPresent()) {
 			maybeWhitespace();

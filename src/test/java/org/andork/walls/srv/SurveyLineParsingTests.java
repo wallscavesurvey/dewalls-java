@@ -1075,4 +1075,42 @@ public class SurveyLineParsingTests {
 	public void testFlagWithStationsAndName() throws SegmentParseException {
 		new TestWallsSurveyParser("#Flag L98 A /KY Hole").expectFlag().name("KY Hole").stations("L98", "A");
 	}
+
+	@Test
+	public void testVarianceLrudOrder() throws SegmentParseException {
+		for (String line : new String[] {
+			"A B 5 253 8 (?,?) <10,6,2,0>",
+			"A B 5 253 8 <10,6,2,0> (?,?)",
+			"A B 5 253 8 (?,?) < 10,6,2,0 >",
+			"A B 5 253 8 < 10,6,2,0 > (?,?)",
+			"A B 5 253 8 (?,?) *10,6,2,0*",
+			"A B 5 253 8 *10,6,2,0* (?,?)",
+			"A B 5 253 8 (?,?) * 10,6,2,0 *",
+			"A B 5 253 8 * 10,6,2,0 * (?,?)", }) {
+			new TestWallsSurveyParser(line)
+				.expectVector()
+				.from("A")
+				.to("B")
+				.distance(meters(5))
+				.azimuth(degrees(253))
+				.inclination(degrees(8))
+				.varianceOverrides(VarianceOverride.FLOATED, VarianceOverride.FLOATED)
+				.lruds(meters(10), meters(6), meters(2), meters(0));
+		}
+	}
+
+	@Test
+	public void testBug001() throws SegmentParseException {
+		new TestWallsSurveyParser(
+			"AG15c CC30:AG20 62 294 0 * 0 4 1 0 * (?,?) ; Floating this osentsible tie via variance override")
+				.expectVector()
+				.from("AG15c")
+				.to("CC30:AG20")
+				.distance(meters(62))
+				.azimuth(degrees(294))
+				.inclination(degrees(0))
+				.lruds(meters(0), meters(4), meters(1), meters(0))
+				.varianceOverrides(VarianceOverride.FLOATED, VarianceOverride.FLOATED)
+				.comment(" Floating this osentsible tie via variance override");
+	}
 }
