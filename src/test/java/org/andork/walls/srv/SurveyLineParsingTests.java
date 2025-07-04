@@ -1,5 +1,7 @@
 package org.andork.walls.srv;
 
+import static org.andork.unit.Angle.degrees;
+import static org.andork.unit.Length.meters;
 import static org.andork.walls.LineParserAssertions.assertThrows;
 
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ public class SurveyLineParsingTests {
 	FixedStation fixedStation;
 	List<WallsMessage> messages;
 	String comment;
+	List<String> flagStations;
+	String flagName;
 
 	@Before
 	public void setUp() {
@@ -30,6 +34,8 @@ public class SurveyLineParsingTests {
 		fixedStation = null;
 		messages = new ArrayList<>();
 		comment = null;
+		flagStations = new ArrayList<>();
+		flagName = null;
 		parser.setVisitor(new AbstractWallsVisitor() {
 			@Override
 			public void parsedVector(Vector parsedVector) {
@@ -44,6 +50,12 @@ public class SurveyLineParsingTests {
 			@Override
 			public void parsedComment(String parsedComment) {
 				comment = parsedComment;
+			}
+
+			@Override
+			public void parsedFlag(List<String> stations, String flag) {
+				flagStations = stations;
+				flagName = flag;
 			}
 
 			@Override
@@ -1011,5 +1023,56 @@ public class SurveyLineParsingTests {
 		Assert.assertEquals(Angle.degrees(2), units.averageInclination(Angle.degrees(3), Angle.degrees(-1)));
 		Assert.assertEquals(Angle.degrees(2), units.averageInclination(Angle.degrees(1), Angle.degrees(-3)));
 		Assert.assertEquals(Angle.degrees(-3), units.averageInclination(null, Angle.degrees(3)));
+	}
+
+	@Test
+	public void testOmittedInclination() throws SegmentParseException {
+		for (String line : new String[] {
+			"OldB17 OldB18 18.0 254 - <7,3,6,4>",
+			"OldB17 OldB18 18.0 254 -- <7,3,6,4>", }) {
+			new TestWallsSurveyParser(line)
+				.expectVector()
+				.from("OldB17")
+				.to("OldB18")
+				.distance(meters(18))
+				.azimuth(degrees(254))
+				.inclination(degrees(0))
+				.lruds(meters(7), meters(3), meters(6), meters(4));
+		}
+	}
+
+	@Test
+	public void testExplicitInclinationSign() throws SegmentParseException {
+		for (String line : new String[] {
+			"P224 PD1 10.8 9.5/- +85/- <10,6,2,0>",
+			"P224 PD1 10.8 9.5/-- +85/-- <10,6,2,0>",
+			"P224 PD1 10.8 9.5/- 85/- <10,6,2,0>",
+			"P224 PD1 10.8 9.5 +85/- <10,6,2,0>",
+			"P224 PD1 10.8 9.5 +85 <10,6,2,0>", }) {
+			new TestWallsSurveyParser(line)
+				.expectVector()
+				.from("P224")
+				.to("PD1")
+				.distance(meters(10.8))
+				.azimuth(degrees(9.5))
+				.inclination(degrees(85))
+				.lruds(meters(10), meters(6), meters(2), meters(0));
+		}
+	}
+
+	@Test
+	public void testFlagWithoutName() throws SegmentParseException {
+		new TestWallsSurveyParser("#Flag L98 KY Hole").expectFlag().name(null).stations("L98", "KY", "Hole");
+
+	}
+
+	@Test
+	public void testFlagWithoutStations() throws SegmentParseException {
+		new TestWallsSurveyParser("#Flag /L98 KY Hole").expectFlag().name("L98 KY Hole").stations();
+	}
+
+	@Test
+	public void testFlagWithStationsAndName() throws SegmentParseException {
+		new TestWallsSurveyParser("#Flag L98 A /KY Hole").expectFlag().name("KY Hole").stations("L98", "A");
 	}
 }

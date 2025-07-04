@@ -938,12 +938,7 @@ public class WallsSurveyParser extends LineParser {
 		if (stations.isEmpty()) {
 			units.setFlag(_flag.orElse(null));
 		}
-		else {
-			if (!_flag.isPresent()) {
-				throwAllExpected();
-			}
-			visitor.parsedFlag(stations, _flag.get());
-		}
+		visitor.parsedFlag(stations, _flag.orElse(null));
 
 		inlineCommentOrEndOfLine();
 	}
@@ -1566,14 +1561,14 @@ public class WallsSurveyParser extends LineParser {
 		int start = index;
 
 		oneOf(() -> {
-			vector.frontsightInclination = optional(() -> inclination(units.getVUnit())).orElse(null);
+			vector.frontsightInclination = optionalWithLookahead(() -> inclination(units.getVUnit())).orElse(null);
 			maybe(() -> {
 				expect('/');
-				vector.backsightInclination = optional(() -> inclination(units.getVbUnit())).orElse(null);
+				vector.backsightInclination = optionalWithLookahead(() -> inclination(units.getVbUnit())).orElse(null);
 			});
 		}, () -> {
 			expect('/');
-			vector.backsightInclination = optional(() -> inclination(units.getVbUnit())).orElse(null);
+			vector.backsightInclination = optionalWithLookahead(() -> inclination(units.getVbUnit())).orElse(null);
 		});
 
 		incSegment = line.substring(start, index);
