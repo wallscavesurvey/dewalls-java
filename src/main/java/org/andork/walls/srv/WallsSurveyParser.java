@@ -77,6 +77,25 @@ public class WallsSurveyParser extends LineParser {
 		return result.toString();
 	}
 
+	Segment expectDirective(String... expected) throws SegmentParseException {
+		Segment raw = expect(directiveRx, expected);
+		String normalized = raw.toString().replaceFirst("^#\\s*", "#").toLowerCase();
+		for (int i = 0; i < expected.length; i++) {
+			if (normalized.equals(expected[i]))
+				return raw;
+		}
+		throw new SegmentParseExpectedException(raw, expected);
+	}
+
+	<T> T expectDirective(Map<String, T> options) throws SegmentParseException {
+		Segment raw = expect(directiveRx, options.keySet());
+		String normalized = raw.toString().replaceFirst("^#\\s*", "#").toLowerCase();
+		if (!options.containsKey(normalized)) {
+			throw new SegmentParseExpectedException(raw, options.keySet());
+		}
+		return options.get(normalized);
+	}
+
 	<R> Optional<R> optional(Production<R> production) throws SegmentParseException {
 		try {
 			return Optional.of(production.run());
@@ -406,7 +425,7 @@ public class WallsSurveyParser extends LineParser {
 	static final Pattern wordRx = Pattern.compile("\\w+");
 	static final Pattern notSemicolonRx = Pattern.compile("[^;]+");
 	static final Pattern UnitsOptionRx = Pattern.compile("[a-zA-Z_0-9/]*");
-	static final Pattern directiveRx = Pattern.compile("#([]\\[]|[a-zA-Z0-9]+)?");
+	static final Pattern directiveRx = Pattern.compile("#\\s*([]\\[]|[a-zA-Z0-9]+)?");
 	static final Pattern macroNameRx = Pattern.compile("[^()=,,# \t]*");
 	static final Pattern stationRx = Pattern.compile("([^:;,,#/ \t]*:){0,3}[^:;,,#/ \t]{1,8}");
 	static final Pattern prefixRx = Pattern.compile("[^:;,,#/ \t]*");
@@ -736,7 +755,10 @@ public class WallsSurveyParser extends LineParser {
 	void directiveLine() throws SegmentParseException {
 		int start = index;
 		VoidProduction fixLine = this::fixLine;
-		VoidProduction directive = oneOfLowercase(directiveRx, directivesMap);
+		VoidProduction directive = expectDirective(directivesMap);
+		if (directive == null) {
+			throwAllExpected();
+		}
 		index = start;
 		// TODO check this!!
 		if (!directive.equals(fixLine)) {
@@ -747,6 +769,7 @@ public class WallsSurveyParser extends LineParser {
 
 	String replaceMacro() throws SegmentParseException {
 		index += 2;
+
 		int start = index;
 		while (index < line.length()) {
 			char c = line.charAt(index++);
@@ -797,13 +820,13 @@ public class WallsSurveyParser extends LineParser {
 
 	void beginBlockCommentLine() throws SegmentParseException {
 		maybeWhitespace();
-		expect("#[");
+		expectDirective("#[");
 		inBlockComment = true;
 	}
 
 	void endBlockCommentLine() throws SegmentParseException {
 		maybeWhitespace();
-		expect("#]");
+		expectDirective("#]");
 		remaining();
 		inBlockComment = false;
 	}
@@ -864,7 +887,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	List<String> segmentDirective() throws SegmentParseException {
-		oneOf(() -> expectIgnoreCase("#segment"), () -> expectIgnoreCase("#seg"), () -> expectIgnoreCase("#s"));
+		expectDirective("#s", "#seg", "#segment");
 
 		List<String> result = segment;
 
@@ -883,7 +906,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	void prefixDirective() throws SegmentParseException {
-		int prefixIndex = oneOfLowercase(nonwhitespaceRx, prefixDirectives);
+		int prefixIndex = expectDirective(prefixDirectives);
 
 		if (maybeWhitespace().isPresent()) {
 			units.setPrefix(prefixIndex, expect(prefixRx, "<PREFIX>").toString());
@@ -901,7 +924,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	void noteDirective() throws SegmentParseException {
-		oneOf(() -> expectIgnoreCase("#note"), () -> expectIgnoreCase("#n"));
+		expectDirective("#note", "#n");
 
 		whitespace();
 		String _station = station().toString();
@@ -919,7 +942,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	void flagDirective() throws SegmentParseException {
-		oneOf(() -> expectIgnoreCase("#flag"), () -> expectIgnoreCase("#f"));
+		expectDirective("#flag", "#f");
 
 		List<String> stations = new ArrayList<>();
 
@@ -951,7 +974,7 @@ public class WallsSurveyParser extends LineParser {
 	void symbolLine() throws SegmentParseException {
 		maybeWhitespace();
 
-		oneOf(() -> expectIgnoreCase("#symbol"), () -> expectIgnoreCase("#sym"));
+		expectDirective("#symbol", "#sym");
 
 		// ignore the rest for now
 		remaining();
@@ -965,7 +988,7 @@ public class WallsSurveyParser extends LineParser {
 	}
 
 	Date dateDirective() throws SegmentParseException {
-		expectIgnoreCase("#date");
+		expectDirective("#date");
 		whitespace();
 		return oneOf(() -> usDate1(), () -> usDate2(), () -> usDate3(), () -> usDate4());
 	}
@@ -1027,7 +1050,7 @@ public class WallsSurveyParser extends LineParser {
 
 	void UnitsLine() throws SegmentParseException {
 		maybeWhitespace();
-		oneOf(() -> expectIgnoreCase("#units"), () -> expectIgnoreCase("#u"));
+		expectDirective("#u", "#units");
 
 		visitor.willParseUnits();
 
@@ -1807,7 +1830,7 @@ public class WallsSurveyParser extends LineParser {
 
 	void fixLine() throws SegmentParseException {
 		maybeWhitespace();
-		expectIgnoreCase("#fix");
+		expectDirective("#fix");
 		whitespace();
 		fixedStation();
 		whitespaceAndOrComma();

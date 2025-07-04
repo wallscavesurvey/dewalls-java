@@ -5,6 +5,7 @@ import java.util.List;
 import org.andork.segment.SegmentParseException;
 import org.andork.unit.Angle;
 import org.andork.unit.Length;
+import org.andork.unit.Unit;
 import org.andork.unit.UnitizedNumber;
 import org.andork.walls.WallsMessage;
 import org.junit.Assert;
@@ -12,6 +13,7 @@ import org.junit.Assert;
 public class TestWallsSurveyParser {
 	WallsSurveyParser parser = new WallsSurveyParser();
 
+	WallsUnits units;
 	Vector vector;
 	FixedStation fixedStation;
 	List<WallsMessage> messages;
@@ -49,6 +51,11 @@ public class TestWallsSurveyParser {
 			}
 
 			@Override
+			public void parsedUnits() {
+				units = parser.units.toImmutable();
+			}
+
+			@Override
 			public void message(WallsMessage message) {
 				messages.add(message);
 			}
@@ -59,6 +66,7 @@ public class TestWallsSurveyParser {
 	}
 
 	public TestWallsSurveyParser parseLine(String line) throws SegmentParseException {
+		units = null;
 		vector = null;
 		fixedStation = null;
 		messages = null;
@@ -91,8 +99,18 @@ public class TestWallsSurveyParser {
 			return this;
 		}
 
+		public ExpectedVector resolvedFrom(String expected) {
+			Assert.assertEquals(expected, vector.units.processStationName(vector.from));
+			return this;
+		}
+
 		public ExpectedVector to(String expected) {
 			Assert.assertEquals(expected, vector.to);
+			return this;
+		}
+
+		public ExpectedVector resolvedTo(String expected) {
+			Assert.assertEquals(expected, vector.units.processStationName(vector.to));
 			return this;
 		}
 
@@ -208,6 +226,116 @@ public class TestWallsSurveyParser {
 
 		public ExpectedFlag stations(String... expected) {
 			Assert.assertArrayEquals(expected, stations);
+			return this;
+		}
+	}
+
+	public ExpectedUnits expectUnits(String line) throws SegmentParseException {
+		return this.parseLine(line).expectUnits();
+	}
+
+	public ExpectedUnits expectUnits() throws SegmentParseException {
+		return new ExpectedUnits(units);
+	}
+
+	public static class ExpectedUnits {
+		public WallsUnits units;
+
+		public ExpectedUnits(WallsUnits units) {
+			Assert.assertNotNull(units);
+			this.units = units;
+		}
+
+		public ExpectedUnits dUnit(Unit<Length> expected) {
+			Assert.assertEquals(expected, units.getDUnit());
+			return this;
+		}
+
+		public ExpectedUnits aUnit(Unit<Angle> expected) {
+			Assert.assertEquals(expected, units.getAUnit());
+			return this;
+		}
+
+		public ExpectedUnits abUnit(Unit<Angle> expected) {
+			Assert.assertEquals(expected, units.getAbUnit());
+			return this;
+		}
+
+		public ExpectedUnits vUnit(Unit<Angle> expected) {
+			Assert.assertEquals(expected, units.getVUnit());
+			return this;
+		}
+
+		public ExpectedUnits vbUnit(Unit<Angle> expected) {
+			Assert.assertEquals(expected, units.getVbUnit());
+			return this;
+		}
+	}
+
+	public ExpectedFixedStation expectFixedStation(String line) throws SegmentParseException {
+		return this.parseLine(line).expectFixedStation();
+	}
+
+	public ExpectedFixedStation expectFixedStation() {
+		return new ExpectedFixedStation(fixedStation);
+	}
+
+	public static class ExpectedFixedStation {
+		public FixedStation station;
+
+		public ExpectedFixedStation(FixedStation station) {
+			Assert.assertNotNull(station);
+			this.station = station;
+		}
+
+		public ExpectedFixedStation name(String expected) {
+			Assert.assertEquals(expected, station.name);
+			return this;
+		}
+
+		public ExpectedFixedStation north(UnitizedNumber<Length> expected) {
+			Assert.assertEquals(expected, station.north);
+			return this;
+		}
+
+		public ExpectedFixedStation east(UnitizedNumber<Length> expected) {
+			Assert.assertEquals(expected, station.east);
+			return this;
+		}
+
+		public ExpectedFixedStation elevation(UnitizedNumber<Length> expected) {
+			Assert.assertEquals(expected, station.elevation);
+			return this;
+		}
+
+		public ExpectedFixedStation latitude(UnitizedNumber<Angle> expected) {
+			Assert.assertEquals(expected, station.latitude);
+			return this;
+		}
+
+		public ExpectedFixedStation longitude(UnitizedNumber<Angle> expected) {
+			Assert.assertEquals(expected, station.longitude);
+			return this;
+		}
+
+		public ExpectedFixedStation variance(VarianceOverride horizontal, VarianceOverride vertical) {
+			Assert.assertEquals(horizontal, station.horizontalVariance);
+			Assert.assertEquals(vertical, station.verticalVariance);
+			return this;
+		}
+
+		public ExpectedFixedStation note(String expected) {
+			Assert.assertEquals(expected, station.note);
+			return this;
+		}
+
+		public ExpectedFixedStation segment(String... expected) {
+			Assert
+				.assertArrayEquals(
+					expected,
+					station.segment == null
+						? new String[0]
+						: station.segment.toArray(new String[station.segment.size()]));
 			return this;
 		}
 	}

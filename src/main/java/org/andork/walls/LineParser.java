@@ -41,7 +41,8 @@ public class LineParser {
 	public void throwAllExpected(Production<?> production) throws SegmentParseException {
 		try {
 			production.run();
-		} catch (SegmentParseExpectedException ex) {
+		}
+		catch (SegmentParseExpectedException ex) {
 			throwAllExpected(ex);
 		}
 	}
@@ -49,19 +50,20 @@ public class LineParser {
 	public void throwAllExpected(VoidProduction production) throws SegmentParseException {
 		try {
 			production.run();
-		} catch (SegmentParseExpectedException ex) {
+		}
+		catch (SegmentParseExpectedException ex) {
 			throwAllExpected(ex);
 		}
 	}
 
 	@SafeVarargs
-	public final <R> R oneOf(Production<? extends R>... productions)
-			throws SegmentParseException {
+	public final <R> R oneOf(Production<? extends R>... productions) throws SegmentParseException {
 		int start = index;
 		for (Production<? extends R> production : productions) {
 			try {
 				return production.run();
-			} catch (SegmentParseExpectedException ex) {
+			}
+			catch (SegmentParseExpectedException ex) {
 				if (index > start) {
 					throwAllExpected(ex);
 				}
@@ -72,14 +74,14 @@ public class LineParser {
 		return null;
 	}
 
-	public void oneOf(VoidProduction... productions)
-			throws SegmentParseException {
+	public void oneOf(VoidProduction... productions) throws SegmentParseException {
 		int start = index;
 		for (VoidProduction production : productions) {
 			try {
 				production.run();
 				return;
-			} catch (SegmentParseExpectedException ex) {
+			}
+			catch (SegmentParseExpectedException ex) {
 				if (index > start) {
 					throwAllExpected(ex);
 				}
@@ -90,13 +92,13 @@ public class LineParser {
 	}
 
 	@SafeVarargs
-	public final <R> R oneOfWithLookahead(Production<? extends R>... productions)
-			throws SegmentParseException {
+	public final <R> R oneOfWithLookahead(Production<? extends R>... productions) throws SegmentParseException {
 		int start = index;
 		for (Production<? extends R> production : productions) {
 			try {
 				return production.run();
-			} catch (SegmentParseExpectedException ex) {
+			}
+			catch (SegmentParseExpectedException ex) {
 				addExpected(ex);
 				index = start;
 			}
@@ -137,7 +139,8 @@ public class LineParser {
 			try {
 				production.run();
 				return;
-			} catch (SegmentParseExpectedException ex) {
+			}
+			catch (SegmentParseExpectedException ex) {
 				addExpected(ex);
 				index = start;
 			}
@@ -145,11 +148,11 @@ public class LineParser {
 		throwAllExpected();
 	}
 
-
 	public <V> V oneOf(Map<Character, V> map, V elseValue) throws SegmentParseException {
 		try {
 			return oneOf(map);
-		} catch (SegmentParseExpectedException ex) {
+		}
+		catch (SegmentParseExpectedException ex) {
 			addExpected(ex);
 			return elseValue;
 		}
@@ -170,7 +173,8 @@ public class LineParser {
 		int start = index;
 		try {
 			return Optional.of(production.run());
-		} catch (SegmentParseExpectedException ex) {
+		}
+		catch (SegmentParseExpectedException ex) {
 			addExpected(ex);
 			index = start;
 			return Optional.empty();
@@ -182,7 +186,8 @@ public class LineParser {
 		try {
 			production.run();
 			return Optional.of(null);
-		} catch (SegmentParseExpectedException ex) {
+		}
+		catch (SegmentParseExpectedException ex) {
 			addExpected(ex);
 			index = start;
 			return Optional.empty();
@@ -194,7 +199,8 @@ public class LineParser {
 		try {
 			production.run();
 			return Optional.of(null);
-		} catch (SegmentParseExpectedException ex) {
+		}
+		catch (SegmentParseExpectedException ex) {
 			if (index > start) {
 				throwAllExpected(ex);
 			}
@@ -202,12 +208,13 @@ public class LineParser {
 			return Optional.empty();
 		}
 	}
-	
+
 	public <R> Optional<R> maybe(Production<? extends R> production) throws SegmentParseException {
 		int start = index;
 		try {
 			return Optional.of(production.run());
-		} catch (SegmentParseExpectedException ex) {
+		}
+		catch (SegmentParseExpectedException ex) {
 			if (index > start) {
 				throwAllExpected(ex);
 			}
@@ -215,9 +222,9 @@ public class LineParser {
 			return Optional.empty();
 		}
 	}
-	
+
 	public char expectChar(Predicate<Character> charPredicate, String... expectedItems)
-			throws SegmentParseExpectedException {
+		throws SegmentParseExpectedException {
 		char c;
 		if (index >= line.length() || !charPredicate.test(c = line.charAt(index))) {
 			throw new SegmentParseExpectedException(line.charAtAsSegment(index), expectedItems);
@@ -238,8 +245,7 @@ public class LineParser {
 	}
 
 	public void addExpected(SegmentParseExpectedException expected) {
-		int index = Math.max(expected.getSegment().sourceIndex, 0) -
-				Math.max(line.sourceIndex, 0);
+		int index = Math.max(expected.getSegment().sourceIndex, 0) - Math.max(line.sourceIndex, 0);
 
 		if (index > expectedIndex) {
 			expectedItems.clear();
@@ -252,8 +258,7 @@ public class LineParser {
 
 	public SegmentParseExpectedException allExpected() {
 		if (!expectedItems.isEmpty()) {
-			return new SegmentParseExpectedException(
-					line.charAtAsSegment(index), expectedItems);
+			return new SegmentParseExpectedException(line.charAtAsSegment(index), expectedItems);
 		}
 		return new SegmentParseExpectedException(line.charAtAsSegment(index), "<UNKNOWN>");
 	}
@@ -268,7 +273,7 @@ public class LineParser {
 		addExpected(finalEx);
 		throwAllExpected();
 	}
-	
+
 	public void clearExpected() {
 		expectedItems.clear();
 		expectedIndex = 0;
@@ -376,9 +381,7 @@ public class LineParser {
 
 	public int intLiteral() throws SegmentParseException {
 		Optional<Integer> signum = maybe(() -> oneOf(intSignSignums));
-		return signum.isPresent()
-				? signum.get() * unsignedIntLiteral()
-				: unsignedIntLiteral();
+		return signum.isPresent() ? signum.get() * unsignedIntLiteral() : unsignedIntLiteral();
 	}
 
 	private static final Pattern unsignedDoubleLiteralRx = Pattern.compile("\\d+(\\.\\d*)?|\\.\\d+");
@@ -395,9 +398,7 @@ public class LineParser {
 
 	public double doubleLiteral() throws SegmentParseException {
 		Optional<Double> signum = maybe(() -> oneOf(signSignums));
-		return signum.isPresent()
-				? signum.get() * unsignedDoubleLiteral()
-				: unsignedDoubleLiteral();
+		return signum.isPresent() ? signum.get() * unsignedDoubleLiteral() : unsignedDoubleLiteral();
 	}
 
 	public void endOfLine() throws SegmentParseExpectedException {

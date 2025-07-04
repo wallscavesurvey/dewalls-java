@@ -1077,6 +1077,38 @@ public class SurveyLineParsingTests {
 	}
 
 	@Test
+	public void testPrefixDirectiveSpaces() throws SegmentParseException {
+		for (String line : new String[] {
+			"#p foo",
+			"# p foo",
+			"#P foo",
+			"# P foo",
+			"#prefix foo",
+			"# prefix foo",
+			"#Prefix foo",
+			"# Prefix foo",
+			"#prefix1 foo",
+			"# prefix1 foo", }) {
+			new TestWallsSurveyParser(line).expectVector("a b 5 120 8").resolvedFrom("foo:a");
+		}
+	}
+
+	@Test
+	public void testFlagDirectiveSpaces() throws SegmentParseException {
+		for (String line : new String[] {
+			"#f L98 /Test",
+			"#F L98 /Test",
+			"# f L98 /Test",
+			"# F L98 /Test",
+			"#flag L98 /Test",
+			"# flag L98 /Test",
+			"#Flag L98 /Test",
+			"# Flag L98 /Test" }) {
+			new TestWallsSurveyParser(line).expectFlag().name("Test").stations("L98");
+		}
+	}
+
+	@Test
 	public void testVarianceLrudOrder() throws SegmentParseException {
 		for (String line : new String[] {
 			"A B 5 253 8 (?,?) <10,6,2,0>",
@@ -1112,5 +1144,58 @@ public class SurveyLineParsingTests {
 				.lruds(meters(0), meters(4), meters(1), meters(0))
 				.varianceOverrides(VarianceOverride.FLOATED, VarianceOverride.FLOATED)
 				.comment(" Floating this osentsible tie via variance override");
+	}
+
+	@Test
+	public void testUnitsDirectiveSpaces() throws SegmentParseException {
+		for (String line : new String[] {
+			"#u feet",
+			"# u feet",
+			"#U feet",
+			"# U feet",
+			"#units feet",
+			"# units feet",
+			"#Units feet",
+			"# Units feet", }) {
+			new TestWallsSurveyParser(line).expectUnits().dUnit(Length.feet);
+		}
+	}
+
+	@Test
+	public void testInlineSegmentDirectiveSpaces() throws SegmentParseException {
+		for (String line : new String[] {
+			"A B 5 320 4 #s foo",
+			"A B 5 320 4 # s foo",
+			"A B 5 320 4 #S foo",
+			"A B 5 320 4 # S foo",
+			"A B 5 320 4 #seg foo",
+			"A B 5 320 4 # seg foo",
+			"A B 5 320 4 #Seg foo",
+			"A B 5 320 4 # Seg foo",
+			"A B 5 320 4 #segment foo",
+			"A B 5 320 4 # segment foo",
+			"A B 5 320 4 #SEGMENT foo",
+			"A B 5 320 4 # SEGMENT foo", }) {
+			new TestWallsSurveyParser(line)
+				.expectVector()
+				.from("A")
+				.to("B")
+				.distance(meters(5))
+				.azimuth(degrees(320))
+				.inclination(degrees(4))
+				.segment("foo");
+		}
+	}
+
+	@Test
+	public void testFixDirectiveSpaces() throws SegmentParseException {
+		for (String line : new String[] { "#fix a 1 2 3", "# fix a 1 2 3", "# FIX a 1 2 3", "#Fix a 1 2 3" }) {
+			new TestWallsSurveyParser(line)
+				.expectFixedStation()
+				.name("a")
+				.east(meters(1))
+				.north(meters(2))
+				.elevation(meters(3));
+		}
 	}
 }
